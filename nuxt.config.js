@@ -42,7 +42,8 @@ module.exports = {
   */
   modules: [
     '@nuxtjs/vuetify',
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    'nuxt-clipboard2'
   ],
   /*
   ** vuetify module configuration
