@@ -130,6 +130,8 @@ router.get('/mine', function (req, res) {
   const hash = bitcoin.hashBlock(previousHash, currentBlockData, nonce);
 
   const newBlock = bitcoin.createNewBlock(nonce, previousHash, hash);
+  const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
+
 
   // Broadcast new block
   const reqNodesPromises = [];
@@ -146,7 +148,7 @@ router.get('/mine', function (req, res) {
     .then(data => {
       console.log("data promises /receive-new-block" + JSON.stringify(data));
       // Broadcast mining reward by hitting transaction/broadcast of our current node
-      const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
+      // const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
       console.log('MiningRewardTransaction: ', miningRewardTransaction);
       const requestOptions = {
         uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
@@ -162,7 +164,7 @@ router.get('/mine', function (req, res) {
         res.json({
           note: "Block mined and broadcast succesfully",
           block: newBlock,
-          pendingTransactions: bitcoin.pendingTransactions
+          miningReward: miningRewardTransaction
         });
       })
       .catch(err => {
@@ -170,7 +172,7 @@ router.get('/mine', function (req, res) {
         res.json({
           note: "Block mined and partially broadcasted",
           block: newBlock,
-          pendingTransactions: bitcoin.pendingTransactions
+          miningReward: miningRewardTransaction
         })        
       });
 })

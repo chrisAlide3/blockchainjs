@@ -51,6 +51,7 @@ export const actions = {
   },
 
   async addTransaction ({ commit, dispatch }, transaction) {
+    console.log("addTransaction in store: " + JSON.stringify(transaction));
     try {
       const response = await this.$axios.$post('/api/transaction/broadcast', transaction);
       commit('addTransactionToPendingTransactions', response.newTransaction);
@@ -61,7 +62,7 @@ export const actions = {
     
   },
 
-  async calculateNewBalance ({ commit }, transaction) {
+  calculateNewBalance ({ commit }, transaction) {
     let balance = this.getters.balance;
     if (this.getters.walletAddress === transaction.sender) {
       balance -= parseFloat(transaction.amount);
@@ -84,7 +85,10 @@ export const actions = {
       console.log("New block from mining: " + JSON.stringify(res.block));
       //dispatch('loadBlockchain');
       commit('addBlockToChain', res.block);
-      commit('overwritePendingTransactions', res.pendingTransactions);
+      commit('clearPendingTransactions');
+      commit('addTransactionToPendingTransactions', res.miningReward)
+      dispatch('calculateNewBalance', res.miningReward);
+      //commit('overwritePendingTransactions', res.pendingTransactions);
 
     } catch (error) {
       console.log("Error in mineBlock action: " + error)   
