@@ -20,6 +20,12 @@ export const mutations = {
     state.pendingTransactions.push(transaction);
   },
 
+  overwritePendingTransactions (state, pendingTransactions) {
+    state.pendingTransactions = pendingTransactions.map(transaction => {
+      return transaction;
+    })
+  },
+
   writeBalance (state, balance) {
     state.balance = balance;
   },
@@ -76,9 +82,10 @@ export const actions = {
     try {
       const res = await this.$axios.$get('/api/mine');
       console.log("New block from mining: " + JSON.stringify(res.block));
-      dispatch('loadBlockchain');
-      // commit('addBlockToChain', res.block);
-      // commit('clearPendingTransactions');
+      //dispatch('loadBlockchain');
+      commit('addBlockToChain', res.block);
+      commit('overwritePendingTransactions', res.pendingTransactions);
+
     } catch (error) {
       console.log("Error in mineBlock action: " + error)   
     }
