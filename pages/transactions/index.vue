@@ -2,7 +2,7 @@
   <div>
     <AddTransactionForm @addTransaction="addTransaction"/>
     <div v-for="transaction in pendingTransactions" :key="transaction.id">
-      <Transaction :transaction=transaction></Transaction>
+      <Transaction :transaction="transaction"></Transaction>
     </div>
   </div>
 </template>
@@ -25,6 +25,21 @@ export default {
       reversedTransactions.reverse();
       return reversedTransactions;
     },
+
+    senderAddress () {
+      return this.$store.getters.walletAddress;
+    }
+
+    // balance () {
+    //     this.$axios.$get('/api/address/' + this.senderAddress)
+    //       .then(data => {
+    //         console.log("Response from get balance: " + data.balance);
+    //         return {balance: data.balance};
+    //       })
+    //       .catch(err => {
+    //         return {balance: 0};
+    //       })
+    //   }
   },
 
   methods: {

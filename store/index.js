@@ -2,7 +2,9 @@ export const state = () => ({
   chain: [],
   pendingTransactions: [],
   networkNodes: [],
-  walletAddress: ''
+  walletAddress: '',
+  currentNodeUrl: '',
+  balance: 0
 })
 
 export const mutations = {
@@ -10,17 +12,31 @@ export const mutations = {
     state.chain = blockchain.chain;
     state.pendingTransactions = blockchain.pendingTransactions,
     state.networkNodes = blockchain.networkNodes,
-    state.walletAddress = blockchain.walletAddress
+    state.walletAddress = blockchain.walletAddress,
+    state.currentNodeUrl = blockchain.currentNodeUrl
   },
 
   addTransactionToPendingTransactions (state, transaction) {
     state.pendingTransactions.push(transaction);
+  },
+
+  writeBalance (state, balance) {
+    state.balance = balance;
+  },
+
+  addBlockToChain (state, block) {
+    state.chain.push(block);
+  },
+
+  clearPendingTransactions (state) {
+    state.pendingTransactions = [];
   }
 }
 
 export const actions = {
   async nuxtServerInit ({ commit, dispatch }, {req}) {
     await dispatch('loadBlockchain');
+    await dispatch('getBalance');
   },
 
   async loadBlockchain ({ commit }) {
@@ -28,11 +44,46 @@ export const actions = {
     commit('LOAD_BLOCKCHAIN', blockchain);
   },
 
-  async addTransaction ({ commit }, transaction) {
-    const response = await this.$axios.$post('/api/transaction/broadcast', transaction);
-    console.log("addtransaction response: " + JSON.stringify(response));
-    commit('addTransactionToPendingTransactions', response.newTransaction);
-  }
+  async addTransaction ({ commit, dispatch }, transaction) {
+    try {
+      const response = await this.$axios.$post('/api/transaction/broadcast', transaction);
+      commit('addTransactionToPendingTransactions', response.newTransaction);
+      dispatch('calculateNewBalance', transaction);
+    } catch (error) {
+      console.log("Error in action addTransaction");
+    }
+    
+  },
+
+  async calculateNewBalance ({ commit }, transaction) {
+    let balance = this.getters.balance;
+    if (this.getters.walletAddress === transaction.sender) {
+      balance -= parseFloat(transaction.amount);
+    }
+    if (this.getters.walletAddress === transaction.recipient) {
+      balance += parseFloat(transaction.amount);
+    }
+    commit('writeBalance', balance);
+  },
+
+  async getBalance ({ commit }) {
+    const address = this.getters.walletAddress;
+    const res = await this.$axios.$get('/api/address/' + address)
+    commit('writeBalance', res.balance);
+  },
+
+  async mineBlock ({ commit, dispatch }) {
+    try {
+      const res = await this.$axios.$get('/api/mine');
+      console.log("New block from mining: " + JSON.stringify(res.block));
+      dispatch('loadBlockchain');
+      // commit('addBlockToChain', res.block);
+      // commit('clearPendingTransactions');
+    } catch (error) {
+      console.log("Error in mineBlock action: " + error)   
+    }
+    
+  },
 }
 
 export const getters = {
@@ -51,5 +102,13 @@ export const getters = {
   walletAddress (state) {
     return state.walletAddress;
   },
+
+  currentNodeUrl (state) {
+    return state.currentNodeUrl;
+  },
+
+  balance (state) {
+    return state.balance;
+  }
 
 }

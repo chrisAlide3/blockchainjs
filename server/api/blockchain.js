@@ -286,4 +286,32 @@ Blockchain.prototype.getTransactionsByAddress = function(address) {
   return addressTransactions;
 }
 
+Blockchain.prototype.getBalanceByAddress = function(address) {
+  let balance = 0;
+  // Balance from block
+  this.chain.forEach(block => {
+    block.transactions.forEach(transaction => {
+      if (transaction.sender === address) {
+        balance -= transaction.amount
+      }
+      if (transaction.recipient === address) {
+        balance += transaction.amount
+      }
+    })
+  })
+
+  // Balance from pending transactions
+  this.pendingTransactions.forEach(transaction => {
+    if (transaction.sender === address) {
+      balance -= transaction.amount;
+    }
+    if (transaction.recipient === address) {
+      balance += transaction.amount;
+    }
+  })
+
+  return balance;
+  
+}
+
 module.exports = Blockchain;

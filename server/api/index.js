@@ -75,8 +75,8 @@ router.post('/transaction/broadcast', function(req, res) {
   }
   if (req.body.amount <= balance || req.body.sender === '00') {
     const newTransaction = bitcoin.createTransaction(req.body.amount, req.body.sender, req.body.recipient);
-    newTransaction.signature = bitcoin.signTransaction(newTransaction, signingKey);
-    if (bitcoin.transactionIsValid(newTransaction)) {
+    // newTransaction.signature = bitcoin.signTransaction(newTransaction, signingKey);
+    // if (bitcoin.transactionIsValid(newTransaction)) {
       bitcoin.addTransactionToPendingTransaction(newTransaction);
       // Broadcast transaction
       const reqNodesPromises = [];
@@ -96,13 +96,18 @@ router.post('/transaction/broadcast', function(req, res) {
             newTransaction: newTransaction
           });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          res.json({
+            note: "Transaction added but couldn't broadcast to all network nodes",
+            newTransaction: newTransaction
+          })
+        });
 
-    }else {
-      res.json({
-        note: 'Transaction is invalid'
-      })
-    }
+    // }else {
+    //   res.json({
+    //     note: 'Transaction is invalid'
+    //   })
+    // }
   }else {
     res.json({
       note: 'Your balance is insuffisent',
@@ -150,14 +155,18 @@ router.get('/mine', function (req, res) {
       return rp(requestOptions);
     })
     // .then from returned promise of Broadcast mining
-    .then(data => {
-      res.json({
-        note: "Blocked mined and broadcast succesfully",
-        block: newBlock
+      .then(data => {
+        res.json({
+          note: "Block mined and broadcast succesfully",
+          block: newBlock
+        });
+      })
+      .catch(err => {
+        res.json({
+          note: "Block mined and partially broadcasted",
+          block: newBlock
+        })        
       });
-    })
-    .catch(err => console.log(err));
-
 })
 
 router.post("/register-and-broadcast-node", function(req, res) {
@@ -338,16 +347,8 @@ router.get('/transaction/:transactionId', function(req, res) {
 
 router.get('/address/:address', function(req, res) {
   const addressTransactions = bitcoin.getTransactionsByAddress(req.params.address);
-  let balance = 0;
-  // Calculate balance
-  addressTransactions.forEach(transaction => {
-    if (transaction.sender === req.params.address) {
-      balance -= transaction.amount;
-    }
-    if (transaction.recipient === req.params.address) {
-      balance += transaction.amount;
-    }
-  })
+  const balance = bitcoin.getBalanceByAddress(req.params.address);
+  
   res.json({
     balance: balance,
     transactions: addressTransactions
