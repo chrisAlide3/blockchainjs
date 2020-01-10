@@ -1,0 +1,3 @@
+[{"index":1,"timestamp":1578390194697,"transactions":[],"nonce":100,"hash":"0","previousHash":"0"},{"index":2,"timestamp":1578392060216,"transactions":[],"nonce":18140,"hash":"0000b9135b054d1131392c9eb9d03b0111d4b516824a03c35639e12858912100","previousHash":"0"}]
+[{"amount":12.5,"sender":"00","recipient":"04e371147a46330bb1479ebbbc493a80057660ea81277c3f6c6cf75f01f8f50b9e4e3a941853f01c82d8cda38d017044fa49b551effd2fe5f5a0d78dfbdd947045","transactionId":"d067ccc0313611eaaaff49f5e763666b","signature":null}]
+[]
