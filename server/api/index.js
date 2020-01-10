@@ -102,12 +102,10 @@ router.post('/transaction/broadcast', function(req, res) {
             newTransaction: newTransaction
           })
         });
-
-    // }else {
-    //   res.json({
-    //     note: 'Transaction is invalid'
-    //   })
-    // }
+    // res.json({
+    //   note: "Transaction added without broadcast",
+    //   newTransaction: newTransaction
+    // });
   }else {
     res.json({
       note: 'Your balance is insuffisent',
@@ -130,10 +128,9 @@ router.get('/mine', function (req, res) {
   const hash = bitcoin.hashBlock(previousHash, currentBlockData, nonce);
 
   const newBlock = bitcoin.createNewBlock(nonce, previousHash, hash);
-  const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
-
-
-  // Broadcast new block
+  //const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
+  
+  // Broadcast new block to network nodes
   const reqNodesPromises = [];
   bitcoin.networkNodes.forEach(networkNodeUrl => {
     const requestOptions = {
@@ -146,35 +143,43 @@ router.get('/mine', function (req, res) {
   })
   Promise.all(reqNodesPromises)
     .then(data => {
-      console.log("data promises /receive-new-block" + JSON.stringify(data));
-      // Broadcast mining reward by hitting transaction/broadcast of our current node
-      // const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
-      console.log('MiningRewardTransaction: ', miningRewardTransaction);
-      const requestOptions = {
-        uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
-        method: 'POST',
-        body: miningRewardTransaction,
-        json: true
-      }
-      return rp(requestOptions);
+      console.log("Data from broadcast block: " + JSON.stringify(data));
     })
-    // .then from returned promise of Broadcast mining
+    .catch(err => {
+        console.log("Error from broadcast block: " + JSON.stringify(err));
+    })
+    
+    // Broadcast mining reward transaction to network nodes
+    const miningRewardTransaction = {
+      amount: 12.5,
+      sender: '00',
+      recipient: bitcoin.walletAddress
+    }
+    
+    const requestOptions = {
+      uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
+      method: 'POST',
+      body: miningRewardTransaction,
+      json: true
+    }
+    rp(requestOptions)
       .then(data => {
-        console.log('data promises /transaction/broadcast' + data)
+        console.log("Mining reward broadcasted: " + JSON.stringify(data));
         res.json({
-          note: "Block mined and broadcast succesfully",
+          note: "Block mined succesfully. Mining reward added",
           block: newBlock,
-          miningReward: miningRewardTransaction
-        });
+          miningReward: data.newTransaction  
+        })
       })
       .catch(err => {
-        console.log('Enter catch error transaction-broadcast: ' + err);
+        console.log("Error in broadcast maining reward: " + err);
         res.json({
-          note: "Block mined and partially broadcasted",
+          note: "Block mined succesfully. Error adding mining reward",
           block: newBlock,
-          miningReward: miningRewardTransaction
-        })        
-      });
+          miningReward: null
+        })
+      })
+    
 })
 
 router.post("/register-and-broadcast-node", function(req, res) {
@@ -243,6 +248,7 @@ router.post('/register-nodes-bulk', function(req, res) {
   const allNetworkNodes = req.body.allNetworkNodes;
   allNetworkNodes.forEach(networkNodeUrl => {
     if (bitcoin.networkNodes.indexOf(networkNodeUrl) == -1 && networkNodeUrl !== bitcoin.currentNodeUrl) {
+     // if (bitcoin.networkNodes.indexOf(networkNodeUrl) == -1 && networkNodeUrl !== req.body.currentNodeUrl) {
       bitcoin.networkNodes.push(networkNodeUrl);
       bitcoin.writeBlockchainFile(bitcoin.chain, bitcoin.pendingTransactions, bitcoin.networkNodes);
     }
@@ -265,14 +271,16 @@ router.post('/receive-new-block', function(req, res) {
     bitcoin.chain.push(newBlock);
     bitcoin.pendingTransactions = [];
     bitcoin.writeBlockchainFile(bitcoin.chain, bitcoin.pendingTransactions, bitcoin.networkNodes);
+    // res.json({
+    //   note: 'New block received and accepted',
+    //   newBlock: newBlock
+    // });
     res.json({
       note: 'New block received and accepted',
-      newBlock: newBlock
     });
   }else {
     res.json({
       note: 'Block rejected',
-      newBlock: newBlock
     });
   }
 })

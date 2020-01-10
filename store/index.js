@@ -83,11 +83,14 @@ export const actions = {
     try {
       const res = await this.$axios.$get('/api/mine');
       console.log("New block from mining: " + JSON.stringify(res.block));
+      console.log("Reward transaction from mining: " + JSON.stringify(res.miningReward))
       //dispatch('loadBlockchain');
       commit('addBlockToChain', res.block);
       commit('clearPendingTransactions');
-      commit('addTransactionToPendingTransactions', res.miningReward)
-      dispatch('calculateNewBalance', res.miningReward);
+      if (res.miningReward !== null) {
+        commit('addTransactionToPendingTransactions', res.miningReward)
+        dispatch('calculateNewBalance', res.miningReward);  
+      }
       //commit('overwritePendingTransactions', res.pendingTransactions);
 
     } catch (error) {
