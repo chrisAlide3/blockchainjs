@@ -7,44 +7,27 @@
     <v-flex
       xs12
       sm8
-      md6
+      justify-center
     >
-      <div class="text-xs-center">
-        <logo />
-        <vuetify-logo />
-      </div>
       <v-card>
-        <v-card-title class="headline">Welcome to the Vuetify + Nuxt.js template</v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>For more information on Vuetify, check out the <a
-            href="https://vuetifyjs.com"
-            target="_blank"
-          >documentation</a>.</p>
-          <p>If you have questions, please join the official <a
-            href="https://chat.vuetifyjs.com/"
-            target="_blank"
-            title="chat"
-          >discord</a>.</p>
-          <p>Find a bug? Report it on the github <a
-            href="https://github.com/vuetifyjs/vuetify/issues"
-            target="_blank"
-            title="contribute"
-          >issue board</a>.</p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
+        <v-img
+          :src="require('../assets/images/cryptocurrency.jpg')"
+          aspect-ratio="2.75"
+        ></v-img>
+        <v-card-title class="headline justify-center orange--text">Welcome to PseudoCoin</v-card-title>
+
+        <div class="text-xs-center">
+          <v-btn @click="getStarted" color="orange" class="text-xs-center">Get Started ...</v-btn>
+        </div>
+
+        <v-card-text class="text-xs-center">
+          <p>PseudoCoin is a Bitcoin clone to help Cryptocurrency begginers understanding how Cryptos work</p>
           <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
+            <em><small>&mdash; Chris Bracher</small></em>
           </div>
           <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-          >Nuxt Documentation</a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-          >Nuxt GitHub</a>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla blanditiis dolor nesciunt nam placeat rerum soluta cumque, vitae earum enim. Quas, deleniti ratione possimus veritatis doloribus ea molestiae iste aperiam!</p>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore soluta aperiam dolores nihil ducimus consectetur iusto eligendi porro pariatur odio rem unde culpa veritatis assumenda, est nemo accusantium placeat eos?</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -68,6 +51,15 @@ export default {
   components: {
     Logo,
     VuetifyLogo
+  },
+
+  methods: {
+    getStarted () {
+      // Check if wallet available
+      // If yes go to /blockchain
+      // If no go to register
+      this.$router.push('/register');
+    }
   }
 }
 </script>
