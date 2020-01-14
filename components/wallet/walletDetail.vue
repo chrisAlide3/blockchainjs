@@ -136,7 +136,6 @@ export default {
     },
 
     deleteWallet () {
-      console.log("Delete wallet clicked");
       this.selected.forEach(privateKey => {
         const index = this.walletAddresses.indexOf(privateKey);
         const balance = this.balanceOfAddresses[index];
@@ -150,10 +149,10 @@ export default {
     },
 
     switchActiveWallet () {
-      console.log("switchActiveWallet clicked");
       const index = this.selected.indexOf(this.activePrivateKey);
       if (index < 0) {
-        this.$emit("switchActiveWallet", this.selected[0]);
+        this.$emit("switchActiveWallet", {privateKey: this.selected[0]});
+        this.selected = [];
       }else {
         console.log("Selected wallet is already active");
       }

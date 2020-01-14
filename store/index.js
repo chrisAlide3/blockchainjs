@@ -114,6 +114,16 @@ export const actions = {
       }
     } catch (error) {
       console.log("Error getting balance: " + error);
+    }  
+  },
+
+  async getBalanceOfActiveWallet ({ commit }, walletAddress) {
+    try {
+      // const address = this.getters.walletAddress;
+      const res = await this.$axios.$get('/api/address/' + walletAddress);
+      commit('writeBalance', res.balance);  
+    } catch (error) {
+      console.log("Error getting balance: " + error);
     }
     
   },
@@ -162,6 +172,17 @@ export const actions = {
       commit('setWalletAddress', res.walletAddress);
     } catch (error) {
       console.log('Error in action deleteWallet');
+    }
+  },
+
+  async switchActiveWallet ({ commit, dispatch }, privateKey) {
+    try {
+      const res = await this.$axios.$post('/api/switch-wallet', privateKey);
+      commit('setPrivateKey', res.privateKey);
+      commit('setWalletAddress', res.walletAddress);
+      dispatch('getBalanceOfActiveWallet', res.walletAddress);
+    } catch (error) {
+      
     }
   }
 }

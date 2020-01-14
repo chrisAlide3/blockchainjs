@@ -59,6 +59,16 @@ router.post('/delete-wallet', function (req, res) {
   }
 })
 
+router.post('/switch-wallet', function (req, res) {
+  const privateKey = req.body.privateKey;
+  bitcoin.setActiveWallet(privateKey);
+  res.json({
+    note: 'Switched wallet successfully',
+    privateKey: bitcoin.privateKey,
+    walletAddress: bitcoin.walletAddress
+  });
+})
+
 router.get('/blockchain', function (req, res) {
   console.log("Wallet addresses on API: " + bitcoin.walletAddresses);
   res.send(bitcoin);
