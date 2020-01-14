@@ -150,6 +150,19 @@ export const actions = {
     } catch (error) {
       console.log('Error in action createWallet');
     }
+  },
+
+  async deleteWallet ({ commit }, privateKey) {
+    try {
+      const res = await this.$axios.$post('/api/delete-wallet', privateKey);
+      console.log("response from delete-wallet: " + JSON.stringify(res));
+      
+      commit('setWalletAddresses', res.walletAddresses);
+      commit('setPrivateKey', res.privateKey);
+      commit('setWalletAddress', res.walletAddress);
+    } catch (error) {
+      console.log('Error in action deleteWallet');
+    }
   }
 }
 

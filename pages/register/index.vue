@@ -30,6 +30,8 @@
             <WalletDetail
             v-else          
             @createWallet="createWallet"
+            @deleteWallet="deleteWallet"
+            @switchActiveWallet="switchActiveWallet"
             />
           </v-card>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
@@ -116,6 +118,8 @@ f     <v-stepper dark v-model="e1" vertical>
             <WalletDetail
               v-else
               @createWallet="createWallet"
+              @deleteWallet="deleteWallet"
+              @switchActiveWallet="switchActiveWallet"
             />
           </v-card>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
@@ -246,6 +250,23 @@ f     <v-stepper dark v-model="e1" vertical>
         } catch (error) {
           console.log("Error creating wallet");
           
+        }
+      },
+
+      deleteWallet (privateKey) {
+        console.log("PrivateKey in emmit delete: " + privateKey);
+        try {
+          this.$store.dispatch("deleteWallet", privateKey);
+        } catch (error) {
+          console.log("Error in dispatch deleteWallet: " + error);
+        }
+      },
+
+      switchActiveWallet (privateKey) {
+        try {
+          this.$store.dispatch("switchActiveWallet", privateKey);
+        } catch (error) {
+          console.log("Error in dispatch switchActiveWallet: " + error);
         }
       },
 

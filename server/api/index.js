@@ -15,22 +15,13 @@ const blockchainFileName = "blockchain" + currentNodeUrl.replace(/\//g, '') + ".
 // Create blockchain
 const bitcoin = new Blockchain(blockchainFileName, walletFileName, currentNodeUrl);
 
-// Create Wallet or Load Wallet if Walletfile available
-// const ec = new EC('secp256k1');
 try {
   fs.statSync(bitcoin.walletFileName);
   console.log("Wallet file found: " + bitcoin.walletFileName);
   bitcoin.loadWalletFromFile();
 } catch (error) {
   console.log("No wallet file");
-  // const ec = new EC('secp256k1');
-  // const key = ec.genKeyPair();
-  // //const publicKey = key.getPublic('hex');
-  // const privateKey = key.getPrivate('hex');
-  // bitcoin.writeWalletFile(privateKey);
 }
-
-//const signingKey = ec.keyFromPrivate(bitcoin.privateKey);
 
 //Creating Genesis bloc if no blockchain file or load blockchain from file
 try {
@@ -51,6 +42,21 @@ router.get('/create-wallet', function (req, res) {
     walletAddress: bitcoin.walletAddress,
     walletAddresses: bitcoin.walletAddresses
   });
+})
+
+router.post('/delete-wallet', function (req, res) {
+  const privateKey = req.body.privateKey;
+  try {
+    bitcoin.deleteWallet(privateKey);
+    res.json({
+      note: 'Wallet deleted successfully',
+      privateKey: bitcoin.privateKey,
+      walletAddress: bitcoin.walletAddress,
+      walletAddresses: bitcoin.walletAddresses
+    })
+  } catch (error) {
+    
+  }
 })
 
 router.get('/blockchain', function (req, res) {
@@ -379,7 +385,6 @@ router.get('/address/:address', function(req, res) {
     balance: balance,
     transactions: addressTransactions
   });
-
 })
 
 module.exports = {

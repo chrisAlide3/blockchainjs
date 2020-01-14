@@ -24,20 +24,20 @@ Blockchain.prototype.loadWalletFromFile = function() {
   console.log("loadWalletFromFile");
   try {
     let parsedLine = null;
-    let index = 0;
+    // let index = 0;
     const lines = fs.readFileSync(this.walletFileName, 'utf8').split('\n');
     // Load wallets
     parsedLine = JSON.parse(lines[0]);
     parsedLine.forEach(privateKey => {
       this.walletAddresses.push(privateKey);
-      // Set first walletAddress as working address
-      if (index === 0) {
-        const key = ec.keyFromPrivate(privateKey);
-        this.walletAddress = key.getPublic('hex');
-        this.privateKey = privateKey;
-      }
-      index++;
     });
+    // Set first walletAddress as working address
+    if (this.walletAddresses.length > 0) {
+      this.setActiveWallet(this.walletAddresses[0]);
+    }else {
+      this.setActiveWallet(null);
+    }
+
   } catch (error) {
     console.log("Error loading wallet: " + error);
   }
@@ -46,16 +46,51 @@ Blockchain.prototype.loadWalletFromFile = function() {
 Blockchain.prototype.createWallet = function() {
   const keys = ec.genKeyPair();
   const privateKey = keys.getPrivate('hex');
-  this.writeWalletFile(privateKey);
+  this.walletAddresses.push(privateKey);
+  if (this.privateKey === '') {
+    this.setActiveWallet(privateKey);
+  }
+  this.writeWalletFile();
 }
 
-Blockchain.prototype.writeWalletFile = function(privateKey) {
-  try {
-    this.walletAddresses.push(privateKey);
-    fs.writeFileSync(this.walletFileName, JSON.stringify(this.walletAddresses));
+Blockchain.prototype.setActiveWallet = function(privateKey) {
+  if (privateKey !== null) {
     this.privateKey = privateKey;
     const keys = ec.keyFromPrivate(this.privateKey);
     this.walletAddress = keys.getPublic('hex');
+  }else {
+    this.privateKey = '';
+    this.walletAddress = '';
+  }
+}
+
+Blockchain.prototype.deleteWallet = function(privateKey) {
+  const index = this.walletAddresses.indexOf(privateKey);
+  console.log("PrivateKey in deleteWallet: " + privateKey);
+  
+  console.log("Index of walletAddresses: " + index);
+  // Remove Address from Wallet Addresses
+  if (index >= 0) {
+    this.walletAddresses.splice(index, 1);
+    // Set 1st Address as active address if removed Address is active address
+    if (privateKey === this.privateKey) {
+      if (this.walletAddresses.length > 0) {
+        this.setActiveWallet(this.walletAddresses[0]);
+      }else {
+        this.setActiveWallet(null);
+      }
+    }
+    this.writeWalletFile();
+  }
+}
+
+Blockchain.prototype.writeWalletFile = function() {
+  try {
+    // this.walletAddresses.push(privateKey);
+    fs.writeFileSync(this.walletFileName, JSON.stringify(this.walletAddresses));
+    // this.privateKey = this.walletAddresses[0];
+    // const keys = ec.keyFromPrivate(this.privateKey);
+    // this.walletAddress = keys.getPublic('hex');
   } catch (error) {
     console.log("Error writing wallet file: " + error);    
   }
