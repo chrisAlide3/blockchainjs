@@ -52,7 +52,6 @@ router.post('/delete-wallet', function (req, res) {
       note: 'Wallet deleted successfully',
       privateKey: bitcoin.privateKey,
       walletAddress: bitcoin.walletAddress,
-      walletAddresses: bitcoin.walletAddresses
     })
   } catch (error) {
     

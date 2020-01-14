@@ -55,8 +55,20 @@ export const mutations = {
     state.walletAddresses = walletAddresses;
   },
 
+  removeAddressFromWalletAddresses (state, index) {
+    if (index >= 0) {
+      state.walletAddresses.splice(index, 1);
+    }
+  },
+
   writeBalanceOfAdresses (state, balance) {
     state.balanceOfAddresses.push(balance);
+  },
+
+  removeBalanceFromBalanceOfAddresses (state, index) {
+    if (index >= 0) {
+      state.balanceOfAddresses.splice(index, 1);
+    }
   }
 }
 
@@ -162,12 +174,18 @@ export const actions = {
     }
   },
 
-  async deleteWallet ({ commit }, privateKey) {
+  async deleteWallet ({ commit, dispatch }, payload) {
     try {
-      const res = await this.$axios.$post('/api/delete-wallet', privateKey);
-      console.log("response from delete-wallet: " + JSON.stringify(res));
-      
-      commit('setWalletAddresses', res.walletAddresses);
+      const res = await this.$axios.$post('/api/delete-wallet', payload);
+      const index = this.getters.walletAddresses.indexOf(payload.privateKey);
+      // Remove Address from walletAddresses and balance array
+      commit('removeBalanceFromBalanceOfAddresses', index);
+      commit('removeAddressFromWalletAddresses', index);
+      // Recalculate balance of active wallet if deleted wallet was the active one
+      if (payload.privateKey === this.getters.privateKey) {
+        console.log("Enter getBalanceOfActiveWallet");
+        dispatch('getBalanceOfActiveWallet', res.privateKey);
+      }
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
     } catch (error) {
@@ -184,7 +202,7 @@ export const actions = {
     } catch (error) {
       
     }
-  }
+  },
 }
 
 export const getters = {

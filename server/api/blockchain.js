@@ -66,9 +66,6 @@ Blockchain.prototype.setActiveWallet = function(privateKey) {
 
 Blockchain.prototype.deleteWallet = function(privateKey) {
   const index = this.walletAddresses.indexOf(privateKey);
-  console.log("PrivateKey in deleteWallet: " + privateKey);
-  
-  console.log("Index of walletAddresses: " + index);
   // Remove Address from Wallet Addresses
   if (index >= 0) {
     this.walletAddresses.splice(index, 1);
