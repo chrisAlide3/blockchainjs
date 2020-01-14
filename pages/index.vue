@@ -55,10 +55,23 @@ export default {
 
   methods: {
     getStarted () {
-      // Check if wallet available
-      // If yes go to /blockchain
-      // If no go to register
-      this.$router.push('/register');
+      if (this.$store.getters.walletAddress === '' || this.$store.getters.networkNodes.length <= 0) {
+        this.$router.push('/register');
+      }else {
+        this.$router.push('/blockchain');
+      }
+
+      // else if (this.$store.getters.networkNodes.length <= 0) {
+      //   params = {initialStep: 2}
+      //   //this.$router.push('/register?initialStep=2');
+      // }
+
+      // if (params === null) {
+      //   this.$router.push('/blockchain');
+      // }else {
+      //   this.$router.push('/register', params);
+      // }
+      
     }
   }
 }

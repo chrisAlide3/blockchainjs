@@ -16,7 +16,7 @@ const blockchainFileName = "blockchain" + currentNodeUrl.replace(/\//g, '') + ".
 const bitcoin = new Blockchain(blockchainFileName, walletFileName, currentNodeUrl);
 
 // Create Wallet or Load Wallet if Walletfile available
-const ec = new EC('secp256k1');
+// const ec = new EC('secp256k1');
 try {
   fs.statSync(bitcoin.walletFileName);
   console.log("Wallet file found: " + bitcoin.walletFileName);
@@ -24,13 +24,13 @@ try {
 } catch (error) {
   console.log("No wallet file");
   // const ec = new EC('secp256k1');
-  const key = ec.genKeyPair();
-  //const publicKey = key.getPublic('hex');
-  const privateKey = key.getPrivate('hex');
-  bitcoin.writeWalletFile(privateKey);
+  // const key = ec.genKeyPair();
+  // //const publicKey = key.getPublic('hex');
+  // const privateKey = key.getPrivate('hex');
+  // bitcoin.writeWalletFile(privateKey);
 }
 
-const signingKey = ec.keyFromPrivate(bitcoin.privateKey);
+//const signingKey = ec.keyFromPrivate(bitcoin.privateKey);
 
 //Creating Genesis bloc if no blockchain file or load blockchain from file
 try {
@@ -43,8 +43,18 @@ try {
 }
 
 // API 
+router.get('/create-wallet', function (req, res) {
+  bitcoin.createWallet();
+  res.json({
+    note: 'Wallet created',
+    privateKey: bitcoin.privateKey,
+    walletAddress: bitcoin.walletAddress,
+    walletAddresses: bitcoin.walletAddresses
+  });
+})
+
 router.get('/blockchain', function (req, res) {
-  console.log("/blockchain reached");
+  console.log("Wallet addresses on API: " + bitcoin.walletAddresses);
   res.send(bitcoin);
 })
 

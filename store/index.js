@@ -3,17 +3,22 @@ export const state = () => ({
   pendingTransactions: [],
   networkNodes: [],
   walletAddress: '',
+  walletAddresses: [],
+  privateKey: '',
   currentNodeUrl: '',
-  balance: 0
+  balance: 0,
+  balanceOfAddresses: []
 })
 
 export const mutations = {
   LOAD_BLOCKCHAIN (state, blockchain) {
     state.chain = blockchain.chain;
-    state.pendingTransactions = blockchain.pendingTransactions,
-    state.networkNodes = blockchain.networkNodes,
-    state.walletAddress = blockchain.walletAddress,
-    state.currentNodeUrl = blockchain.currentNodeUrl
+    state.pendingTransactions = blockchain.pendingTransactions;
+    state.networkNodes = blockchain.networkNodes;
+    state.walletAddress = blockchain.walletAddress;
+    state.walletAddresses = blockchain.walletAddresses;
+    state.privateKey = blockchain.privateKey;
+    state.currentNodeUrl = blockchain.currentNodeUrl;
   },
 
   addTransactionToPendingTransactions (state, transaction) {
@@ -36,13 +41,39 @@ export const mutations = {
 
   clearPendingTransactions (state) {
     state.pendingTransactions = [];
+  },
+
+  setPrivateKey (state, privateKey) {
+    state.privateKey = privateKey;
+  },
+
+  setWalletAddress (state, walletAddress) {
+    state.walletAddress = walletAddress;
+  },
+
+  setWalletAddresses (state, walletAddresses) {
+    state.walletAddresses = walletAddresses;
+  },
+
+  writeBalanceOfAdresses (state, balance) {
+    state.balanceOfAddresses.push(balance);
   }
 }
 
 export const actions = {
   async nuxtServerInit ({ commit, dispatch }, {req}) {
-    await dispatch('loadBlockchain');
-    await dispatch('getBalance');
+    try {
+      await dispatch('loadBlockchain');
+    } catch (error) {
+      console.log('Error dispatch loadBlockchain: ' + error);
+    }
+    if (this.getters.walletAddress !== '') {
+      try {
+        await dispatch('getBalancebyAddress', this.getters.walletAddress);
+      } catch (error) {
+        console.log('Error dispatch getBalancebyAddress: ' + error);
+      }
+    }
   },
 
   async loadBlockchain ({ commit }) {
@@ -73,10 +104,18 @@ export const actions = {
     commit('writeBalance', balance);
   },
 
-  async getBalance ({ commit }) {
-    const address = this.getters.walletAddress;
-    const res = await this.$axios.$get('/api/address/' + address)
-    commit('writeBalance', res.balance);
+  async getBalancebyAddress ({ commit }, walletAddress) {
+    try {
+      // const address = this.getters.walletAddress;
+      const res = await this.$axios.$get('/api/address/' + walletAddress);
+      commit('writeBalanceOfAdresses', res.balance);
+      if (walletAddress === this.getters.walletAddress) {
+        commit('writeBalance', res.balance);  
+      }
+    } catch (error) {
+      console.log("Error getting balance: " + error);
+    }
+    
   },
 
   async mineBlock ({ commit, dispatch }) {
@@ -98,6 +137,20 @@ export const actions = {
     }
     
   },
+
+  async createWallet ({ commit }) {
+    console.log('enter store createWallet');
+    
+    try {
+      const res = await this.$axios.$get('/api/create-wallet');
+      console.log("Response from action create wallet: " + JSON.stringify(res));
+      commit('setPrivateKey', res.privateKey);
+      commit('setWalletAddress', res.walletAddress);
+      commit('setWalletAddresses', res.walletAddresses);
+    } catch (error) {
+      console.log('Error in action createWallet');
+    }
+  }
 }
 
 export const getters = {
@@ -117,12 +170,24 @@ export const getters = {
     return state.walletAddress;
   },
 
+  walletAddresses (state) {
+    return state.walletAddresses;
+  },
+
+  privateKey (state) {
+    return state.privateKey;
+  },
+
   currentNodeUrl (state) {
     return state.currentNodeUrl;
   },
 
   balance (state) {
     return state.balance;
+  },
+
+  balanceOfAddresses (state) {
+    return state.balanceOfAddresses;
   }
 
 }

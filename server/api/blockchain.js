@@ -17,32 +17,45 @@ function Blockchain(blockchainFileName, walletFileName, currentNodeUrl) {
   this.walletFileName = walletFileName;
   this.walletAddress = '';
   this.privateKey = '';
+  this.walletAddresses = [];
 }
 
 Blockchain.prototype.loadWalletFromFile = function() {
   console.log("loadWalletFromFile");
   try {
-    // const privateKey = fs.readFileSync(this.walletFileName, 'utf8');
-    // this.privateKey = ec.keyFromPrivate(privateKey);
-    // this.walletAddress = this.privateKey.getPublic('hex');
-    this.privateKey = fs.readFileSync(this.walletFileName, 'utf8');
-    const key = ec.keyFromPrivate(this.privateKey);
-    this.walletAddress = key.getPublic('hex');
-    
+    let parsedLine = null;
+    let index = 0;
+    const lines = fs.readFileSync(this.walletFileName, 'utf8').split('\n');
+    // Load wallets
+    parsedLine = JSON.parse(lines[0]);
+    parsedLine.forEach(privateKey => {
+      this.walletAddresses.push(privateKey);
+      // Set first walletAddress as working address
+      if (index === 0) {
+        const key = ec.keyFromPrivate(privateKey);
+        this.walletAddress = key.getPublic('hex');
+        this.privateKey = privateKey;
+      }
+      index++;
+    });
   } catch (error) {
     console.log("Error loading wallet: " + error);
   }
 }
 
+Blockchain.prototype.createWallet = function() {
+  const keys = ec.genKeyPair();
+  const privateKey = keys.getPrivate('hex');
+  this.writeWalletFile(privateKey);
+}
+
 Blockchain.prototype.writeWalletFile = function(privateKey) {
-  console.log("writeWallet");
   try {
-    fs.writeFileSync(this.walletFileName, privateKey);
-    // this.privateKey = ec.keyFromPrivate(privateKey);
-    // this.walletAddress = this.privateKey.getPublic('hex');
+    this.walletAddresses.push(privateKey);
+    fs.writeFileSync(this.walletFileName, JSON.stringify(this.walletAddresses));
     this.privateKey = privateKey;
-    const key = ec.keyFromPrivate(this.privateKey);
-    this.walletAddress = key.getPublic('hex');
+    const keys = ec.keyFromPrivate(this.privateKey);
+    this.walletAddress = keys.getPublic('hex');
   } catch (error) {
     console.log("Error writing wallet file: " + error);    
   }
