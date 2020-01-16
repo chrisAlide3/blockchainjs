@@ -208,6 +208,8 @@ router.get('/mine', function (req, res) {
 })
 
 router.post("/register-and-broadcast-node", function(req, res) {
+  console.log("req.body register: " + JSON.stringify(req.body));
+  
   const newNodeUrl = req.body.newNodeUrl;
   const reqNodesPromises = [];
 
@@ -282,7 +284,12 @@ router.post('/register-nodes-bulk', function(req, res) {
   res.json({
     note: "Bulk registration completed succesfully"
   });
+})
 
+router.get('network-nodes', function (req, res) {
+  send.json({
+    networkNodes: bitcoin.networkNodes
+  })
 })
 
 router.post('/receive-new-block', function(req, res) {

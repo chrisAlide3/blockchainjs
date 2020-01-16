@@ -51,9 +51,8 @@
           <v-card
             class="mb-5"
             color="grey lighten-1"
-            height="200px"
           >
-            <RegisterNode />
+            <RegisterNode @registerNodeToNetwork="registerNodeToNetwork" />
           </v-card>
 
           <v-btn
@@ -267,6 +266,14 @@ f     <v-stepper dark v-model="e1" vertical>
           this.$store.dispatch("switchActiveWallet", privateKey);
         } catch (error) {
           console.log("Error in dispatch switchActiveWallet: " + error);
+        }
+      },
+
+      registerNodeToNetwork (networkNode) {
+        try {
+          this.$store.dispatch('registerNodeToNetwork', networkNode);
+        } catch (error) {
+          console.log("Error in dispatch register node: " + error);
         }
       },
 

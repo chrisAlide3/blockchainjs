@@ -7,7 +7,8 @@ export const state = () => ({
   privateKey: '',
   currentNodeUrl: '',
   balance: 0,
-  balanceOfAddresses: []
+  balanceOfAddresses: [],
+  error: '',
 })
 
 export const mutations = {
@@ -69,11 +70,22 @@ export const mutations = {
     if (index >= 0) {
       state.balanceOfAddresses.splice(index, 1);
     }
+  },
+
+  setNetworNodes (state, networkNodes) {
+    state.networkNodes = networkNodes;
+  },
+
+  setError (state, message) {
+    state.error = message;
+    console.log("Error in state: " + state.error);
   }
 }
 
-export const actions = {
+export const actions = {  
   async nuxtServerInit ({ commit, dispatch }, {req}) {
+    console.log("axiosBaseUrl: ", this.$axios.defaults.baseURL);
+    
     try {
       await dispatch('loadBlockchain');
     } catch (error) {
@@ -162,10 +174,10 @@ export const actions = {
 
   async createWallet ({ commit }) {
     console.log('enter store createWallet');
+    console.log("axiosBaseUrl in store: ", this.$axios.defaults.baseURL);
     
     try {
       const res = await this.$axios.$get('/api/create-wallet');
-      console.log("Response from action create wallet: " + JSON.stringify(res));
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
       commit('setWalletAddresses', res.walletAddresses);
@@ -203,6 +215,27 @@ export const actions = {
       
     }
   },
+
+  async registerNodeToNetwork ({ commit, dispatch }, payload) {
+    try {
+      const res = await this.$axios.$post(payload.registeringNode + '/api/register-and-broadcast-node', payload);
+      commit('setError', '');
+      dispatch('getNetworkNodes');
+      console.log('Response from register-node action: ' + JSON.stringify(res));
+    } catch (error) {
+      console.log('Error in registerNode action: ' + JSON.stringify(error.message));
+      commit('setError', 'Network Node is not responding. Try register with another node!');
+    }
+  },
+
+  async getNetworkNodes ({ commit }) {
+    try {
+      const res = await this.$axios.$get('api/network-nodes');
+      commit('setNetworNodes', res.networkNodes);
+    } catch (error) {
+      console.log("Error in getNetworkNodes action: " + error);
+    }
+  }
 }
 
 export const getters = {
@@ -240,6 +273,10 @@ export const getters = {
 
   balanceOfAddresses (state) {
     return state.balanceOfAddresses;
-  }
+  },
+
+  error (state) {
+    return state.error;
+  },
 
 }
