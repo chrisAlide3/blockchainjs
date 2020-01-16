@@ -174,8 +174,7 @@ export const actions = {
 
   async createWallet ({ commit }) {
     console.log('enter store createWallet');
-    console.log("axiosBaseUrl in store: ", this.$axios.defaults.baseURL);
-    
+    console.log("axiosBaseUrl in store: ", this.$axios.defaults.baseURL);    
     try {
       const res = await this.$axios.$get('/api/create-wallet');
       commit('setPrivateKey', res.privateKey);
