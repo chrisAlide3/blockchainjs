@@ -3,20 +3,68 @@
     <v-img
       :src="require('../../assets/images/cryptowallet.jpg')" aspect-ratio="4"
     ></v-img>
+    <h3 class="text-xs-center mt-2">Active Wallet</h3>
+    <v-card-text>
+        <v-layout row wrap>
+          <v-flex xs1>
+            <!-- <v-layout> -->
+              <v-checkbox
+                multiple
+                v-model="selected"
+                :value="activePrivateKey"
+                color="red"
+                hide-details
+                class="shrink mr-2"
+              >
+              </v-checkbox>
+          </v-flex>
+          <v-flex xs10 pr-4>
+              <v-textarea
+                label="Private Key"
+                readonly
+                rows=1
+                auto-grow
+                outline
+                background-color="green"
+                :value="activePrivateKey"
+              ></v-textarea>
+            <!-- </v-layout> -->
+          </v-flex>
+          <v-flex xs1>
+            <v-text-field
+              label="Balance"
+              readonly
+              :value="activeWalletBalance"
+            >
+            </v-text-field>
+          </v-flex>
+        </v-layout>
+        
+        <v-layout row wrap justify-center>
+          <v-flex xs10 pr-4>
+            <v-textarea
+              label="Public Key"
+              readonly
+              rows=1
+              auto-grow
+              outline
+              background-color="green"
+              :value="activeWalletAddress"
+            ></v-textarea>
+            <hr class="mt-3">
+          </v-flex>
+        </v-layout>
+    </v-card-text>
 
-    <h3 class="headline mt-2 mb-0 text-xs-center">
-      Wallet Detail
-    </h3>
-
-    <p>{{ selected }}</p>
-
+    <h3 class="text-xs-center" v-if="walletAddresses.length > 1">Additional wallets</h3>
     <v-card-text
-      class="mt-1 text-xs-center"
-      v-for="(privateKey, index) in walletAddresses"
-      :key="index">
+      class="text-xs-center"
+      v-for="(privateKey, index) in walletAddressesWithoutActiveAddress"
+      :key="index"
+    >
       <v-layout row wrap>
-        <v-flex xs11 pr-4 pl-1>
-          <v-layout>
+        <v-flex xs1>
+          <!-- <v-layout> -->
             <v-checkbox
               multiple
               v-model="selected"
@@ -26,16 +74,18 @@
               class="shrink mr-2"
             >
             </v-checkbox>
+        </v-flex>
+        <v-flex xs10 pr-4>
             <v-textarea
               label="Private Key"
               readonly
               rows=1
               auto-grow
               outline
-              :background-color="privateKey === activePrivateKey ? 'green' : 'grey'"
               :value="privateKey"
             ></v-textarea>
-          </v-layout>
+        
+          <!-- </v-layout> -->
         </v-flex>
         <v-flex xs1>
           <v-text-field
@@ -48,47 +98,42 @@
       </v-layout>
 
       <v-layout row wrap justify-center>
-        <v-flex xs10 class="mr-5 pl-1">
+        <v-flex xs10 pr-4>
           <v-textarea
             label="Public Key"
             readonly
             rows=1
             auto-grow
             outline
-            :background-color="privateKey === activePrivateKey ? 'green' : 'grey'"
             :value="getPublicKey(privateKey)"
           ></v-textarea>
-        <hr class="mt-3">
-      </v-flex>
+          <hr class="mt-3">
+        </v-flex>
       </v-layout>
     </v-card-text>
 
-    <v-layout justify-center>
-      <v-flex xs9>
-        <v-card-actions class="justify-space-around">
-          <v-btn
-            @click="createWallet"
-            color="primary"
-          >
-            Generate Wallet
-          </v-btn>
-          <v-btn
-            @click="deleteWallet"
-            color="error"
-            :disabled="selected.length === 0"
-          >
-            Delete Wallet
-          </v-btn>
-          <v-btn
-            @click="switchActiveWallet"
-            color="green"
-            :disabled="selected.length !== 1"
-          >
-            Switch Active Wallet
-          </v-btn>
-        </v-card-actions>
-      </v-flex>
-    </v-layout>
+    <v-card-actions class="justify-space-around">
+      <v-btn
+        @click="createWallet"
+        color="primary"
+      >
+        Generate Wallet
+      </v-btn>
+      <v-btn
+        @click="deleteWallet"
+        color="error"
+        :disabled="selected.length === 0"
+      >
+        Delete Wallet
+      </v-btn>
+      <v-btn
+        @click="switchActiveWallet"
+        color="green"
+        :disabled="selected.length !== 1"
+      >
+        Switch Active Wallet
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -116,12 +161,20 @@ export default {
       return this.$store.getters.walletAddresses;
     },
 
+    walletAddressesWithoutActiveAddress () {
+      return this.$store.getters.walletAddresses.filter(privateKey => privateKey !== this.activePrivateKey);
+    },
+
     activeWalletAddress () {
       return this.$store.getters.walletAddress;
     },
 
     activePrivateKey () {      
       return this.$store.getters.privateKey
+    },
+
+    activeWalletBalance () {
+      return this.$store.getters.balance;
     },
 
     balanceOfAddresses () {
