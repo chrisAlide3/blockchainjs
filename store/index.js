@@ -229,7 +229,7 @@ export const actions = {
 
   async getNetworkNodes ({ commit }) {
     try {
-      const res = await this.$axios.$get('api/network-nodes');
+      const res = await this.$axios.$get('/api/network-nodes');
       commit('setNetworNodes', res.networkNodes);
     } catch (error) {
       console.log("Error in getNetworkNodes action: " + error);

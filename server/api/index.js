@@ -286,8 +286,8 @@ router.post('/register-nodes-bulk', function(req, res) {
   });
 })
 
-router.get('network-nodes', function (req, res) {
-  send.json({
+router.get('/network-nodes', function (req, res) {
+  res.json({
     networkNodes: bitcoin.networkNodes
   })
 })

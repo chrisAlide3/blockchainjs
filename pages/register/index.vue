@@ -137,7 +137,7 @@ f     <v-stepper dark v-model="e1" vertical>
         <v-stepper-step :complete="e1 > 2" step="2" color="orange">Register your Node to Network</v-stepper-step>
         <v-stepper-content step="2">
           <v-card color="grey lighten-1" class="mb-1">
-            
+            <RegisterNode @registerNodeToNetwork="registerNodeToNetwork" /> 
           </v-card>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
           <br>
