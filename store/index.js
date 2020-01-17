@@ -176,7 +176,7 @@ export const actions = {
     console.log('enter store createWallet');
     console.log("axiosBaseUrl in store: ", this.$axios.defaults.baseURL);    
     try {
-      const res = await this.$axios.$get('/api/create-wallet');
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/create-wallet');
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
       commit('setWalletAddresses', res.walletAddresses);

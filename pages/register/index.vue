@@ -4,11 +4,11 @@
     <div class="hidden-sm-and-down">
     <v-stepper dark v-model="e1">
       <v-stepper-header>
-        <v-stepper-step :complete="e1 > 1" step="1" color="orange">Create Wallet</v-stepper-step>
+        <v-stepper-step :complete="e1 > 1" step="1" :color="hasWallet ? 'green' : 'orange'">Create Wallet</v-stepper-step>
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="e1 > 2" step="2" color="orange">Register your Node to Network</v-stepper-step>
+        <v-stepper-step :complete="e1 > 2" step="2" :color="hasNetworkNodes ? 'green' : 'orange'">Register your Node to Network</v-stepper-step>
 
         <v-divider></v-divider>
 
@@ -48,12 +48,23 @@
         </v-stepper-content>
 
         <v-stepper-content step="2">
-          <v-card
-            class="mb-5"
-            color="grey lighten-1"
-          >
-            <RegisterNode @registerNodeToNetwork="registerNodeToNetwork" />
-          </v-card>
+          <v-layout row wrap justify-center>
+            <v-flex xs12>
+              <v-card
+                class="mb-5"
+                color="grey lighten-1"
+              >
+                <NetworkNodesList
+                  v-if="hasNetworkNodes"
+                />
+                <RegisterNode
+                  @registerNodeToNetwork="registerNodeToNetwork"
+                  v-else  
+                />
+              </v-card>
+            </v-flex>
+          </v-layout>
+          
 
           <v-btn
             color="orange"
@@ -105,7 +116,7 @@
     <!-- VERTICAL FOR SMALLER SCREENS -->
     <div class="hidden-md-and-up">
 f     <v-stepper dark v-model="e1" vertical>
-        <v-stepper-step :complete="e1 > 1" step="1" color="orange">Create Wallet</v-stepper-step>
+        <v-stepper-step :complete="e1 > 1" step="1" :color="hasWallet ? 'green' : 'orange'">Create Wallet</v-stepper-step>
 
         <v-stepper-content step="1">
           <v-card color="grey lighten-1" class="mb-1">
@@ -134,15 +145,21 @@ f     <v-stepper dark v-model="e1" vertical>
 
         <v-divider></v-divider>
 
-        <v-stepper-step :complete="e1 > 2" step="2" color="orange">Register your Node to Network</v-stepper-step>
+        <v-stepper-step :complete="e1 > 2" step="2" :color="hasNetworkNodes ? 'green' : 'orange'">Register your Node to Network</v-stepper-step>
         <v-stepper-content step="2">
           <v-card color="grey lighten-1" class="mb-1">
-            <RegisterNode @registerNodeToNetwork="registerNodeToNetwork" /> 
+            <NetworkNodesList
+              v-if="hasNetworkNodes"
+            />
+            <RegisterNode
+              @registerNodeToNetwork="registerNodeToNetwork"
+              v-else  
+            />
           </v-card>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
           <br>
           <v-btn
-            color="primary"
+            color="orange"
             :disabled="!hasNetworkNodes"
             @click="nextStep">
             Continue
@@ -152,6 +169,12 @@ f     <v-stepper dark v-model="e1" vertical>
             @click="e1 = 1"
           >
             Back
+          </v-btn>
+          <v-btn
+            color="primary"
+            @click="nextStep"
+          >
+            Skip
           </v-btn>
           <v-btn @click="cancel" flat>Cancel</v-btn>
         </v-stepper-content>
@@ -165,7 +188,7 @@ f     <v-stepper dark v-model="e1" vertical>
           </v-card>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
           <br>
-          <v-btn color="primary" @click="nextStep">Continue</v-btn>
+          <v-btn color="orange" @click="nextStep">Continue</v-btn>
           <v-btn
             color="primary"
             @click="e1 = 2"
@@ -184,6 +207,7 @@ f     <v-stepper dark v-model="e1" vertical>
   import CreateWallet from '../../components/wallet/createWallet'
   import WalletDetail from '../../components/wallet/walletDetail'
   import RegisterNode from '../../components/network/RegisterNode'
+  import NetworkNodesList from '../../components/network/NetworkNodesList'
   import Start from '../../components/blockchain/Start'
 
   export default {
@@ -191,6 +215,7 @@ f     <v-stepper dark v-model="e1" vertical>
       CreateWallet,
       WalletDetail,
       RegisterNode,
+      NetworkNodesList,
       Start
     },
 
@@ -238,7 +263,11 @@ f     <v-stepper dark v-model="e1" vertical>
             this.error = '';
             this.e1 = 2;
           }
-        }   
+        }
+        
+        if (this.e1 === 2) {
+          this.e1 = 3;
+        }
       },
 
       createWallet () {        
