@@ -16,6 +16,7 @@
       </v-stepper-header>
 
       <v-stepper-items>
+        <!-- Wallet -->
         <v-stepper-content step="1">
           <v-card
             class="mb-1"
@@ -47,6 +48,7 @@
           <v-btn flat @click="cancel">Cancel</v-btn>
         </v-stepper-content>
 
+        <!-- Network Nodes -->
         <v-stepper-content step="2">
           <v-layout row wrap justify-center>
             <v-flex xs12>
@@ -84,13 +86,12 @@
           <v-btn flat @click="cancel">Cancel</v-btn>
         </v-stepper-content>
 
+        <!-- Start using blockchain -->
         <v-stepper-content step="3">
           <v-card
             class="mb-5"
-            color="grey lighten-1"
-            height="200px"
           >
-            <Start />
+             <Start :hasNetworkNodes="hasNetworkNodes" />
           </v-card>
 
           <v-btn
@@ -183,8 +184,10 @@ f     <v-stepper dark v-model="e1" vertical>
 
         <v-stepper-step step="3" color="orange">Start using PseudoCoin</v-stepper-step>
         <v-stepper-content step="3">
-          <v-card color="grey lighten-1" class="mb-1">
-            
+          <v-card
+            class="mb-5"
+          >
+             <Start :hasNetworkNodes="hasNetworkNodes" />
           </v-card>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
           <br>
