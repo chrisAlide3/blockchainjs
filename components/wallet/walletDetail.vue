@@ -1,9 +1,13 @@
 <template>
-  <v-card>
-    <v-img
+  <v-card class="mt-2">
+    <!-- <v-img
       :src="require('../../assets/images/cryptowallet.jpg')" aspect-ratio="4"
-    ></v-img>
-    <h3 class="text-xs-center mt-2">Active Wallet</h3>
+    ></v-img> -->
+    <v-layout row justify-center>
+      <v-card-title>
+        <h3>Active Wallet</h3>
+      </v-card-title>
+    </v-layout>
     <v-card-text>
         <v-layout row wrap>
           <v-flex xs1>
