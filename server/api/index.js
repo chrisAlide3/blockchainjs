@@ -292,6 +292,12 @@ router.get('/network-nodes', function (req, res) {
   })
 })
 
+router.get('/current-nodeurl', function (req, res) {
+  res.json({
+    currentNodeUrl: bitcoin.currentNodeUrl
+  });
+})
+
 router.post('/receive-new-block', function(req, res) {
   const newBlock = req.body.newBlock;
   // Check if block valid

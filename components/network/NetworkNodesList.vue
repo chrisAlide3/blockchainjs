@@ -1,8 +1,8 @@
 <template>
   <v-card>
-    <v-img
+    <!-- <v-img
       :src="require('../../assets/images/networkNodes.png')" aspect-ratio="4"
-    ></v-img>
+    ></v-img> -->
 
     <v-layout justify-center>
       <v-flex xs12>
@@ -10,7 +10,9 @@
         <v-card-text v-for="(networkUrl, index) in networkNodes"
           :key="index"
         >
-          <NetworkNodeUrl :networkUrl="networkUrl" @updateSelection="updateSelection"/>         
+          <v-card>
+            <NetworkNodeUrl :networkUrl="networkUrl" @updateSelection="updateSelection"/>
+          </v-card>
         </v-card-text>
 
         <v-card-actions class="justify-center">

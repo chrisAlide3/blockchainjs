@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <!-- <v-card> -->
     <v-layout align-center justify-space-around row fill-height>
       <v-flex xs6>
         <v-checkbox
@@ -8,10 +8,6 @@
           color="red"
           >
         </v-checkbox>
-        <!-- <v-text-field
-          :value="networkUrl"
-          readonly
-        ></v-text-field>             -->
       </v-flex>
 
       <v-flex xs2>
@@ -30,11 +26,25 @@
         </v-chip>
       </v-flex>      
     </v-layout>
-  </v-card>
+  <!-- </v-card> -->
 </template>
 
 <script>
 export default {
+  async created () {
+    console.log("Enter created hook");
+    
+    try {
+      await this.$axios.$get(this.networkUrl + '/current-nodeurl');
+      console.log('found status');
+      
+      this.isOnline = true;
+    } catch (error) {
+      this.isOnline = false;
+            console.log('didnt find status');
+    }
+  },
+
   props: {
     networkUrl: String
   },
