@@ -82,10 +82,9 @@ export const mutations = {
   }
 }
 
-export const actions = {  
+export const actions = {
+
   async nuxtServerInit ({ commit, dispatch }, {req}) {
-    console.log("axiosBaseUrl: ", this.$axios.defaults.baseURL);
-    
     try {
       await dispatch('loadBlockchain');
     } catch (error) {
@@ -108,7 +107,7 @@ export const actions = {
   async addTransaction ({ commit, dispatch }, transaction) {
     console.log("addTransaction in store: " + JSON.stringify(transaction));
     try {
-      const response = await this.$axios.$post('/api/transaction/broadcast', transaction);
+      const response = await this.$axios.$post(this.getters.currentNodeUrl + '/transaction/broadcast', transaction);
       commit('addTransactionToPendingTransactions', response.newTransaction);
       dispatch('calculateNewBalance', transaction);
     } catch (error) {
@@ -131,7 +130,7 @@ export const actions = {
   async getBalancebyAddress ({ commit }, walletAddress) {
     try {
       // const address = this.getters.walletAddress;
-      const res = await this.$axios.$get('/api/address/' + walletAddress);
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);
       commit('writeBalanceOfAdresses', res.balance);
       if (walletAddress === this.getters.walletAddress) {
         commit('writeBalance', res.balance);  
@@ -144,7 +143,7 @@ export const actions = {
   async getBalanceOfActiveWallet ({ commit }, walletAddress) {
     try {
       // const address = this.getters.walletAddress;
-      const res = await this.$axios.$get('/api/address/' + walletAddress);
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);
       commit('writeBalance', res.balance);  
     } catch (error) {
       console.log("Error getting balance: " + error);
@@ -154,7 +153,7 @@ export const actions = {
 
   async mineBlock ({ commit, dispatch }) {
     try {
-      const res = await this.$axios.$get('/api/mine');
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/mine');
       console.log("New block from mining: " + JSON.stringify(res.block));
       console.log("Reward transaction from mining: " + JSON.stringify(res.miningReward))
       //dispatch('loadBlockchain');
@@ -187,7 +186,7 @@ export const actions = {
 
   async deleteWallet ({ commit, dispatch }, payload) {
     try {
-      const res = await this.$axios.$post('/api/delete-wallet', payload);
+      const res = await this.$axios.$post(this.getters.currentNodeUrl + '/delete-wallet', payload);
       const index = this.getters.walletAddresses.indexOf(payload.privateKey);
       // Remove Address from walletAddresses and balance array
       commit('removeBalanceFromBalanceOfAddresses', index);
@@ -206,7 +205,7 @@ export const actions = {
 
   async switchActiveWallet ({ commit, dispatch }, privateKey) {
     try {
-      const res = await this.$axios.$post('/api/switch-wallet', privateKey);
+      const res = await this.$axios.$post(this.getters.currentNodeUrl + '/switch-wallet', privateKey);
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
       dispatch('getBalanceOfActiveWallet', res.walletAddress);
@@ -229,7 +228,7 @@ export const actions = {
 
   async getNetworkNodes ({ commit }) {
     try {
-      const res = await this.$axios.$get('/api/network-nodes');
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/network-nodes');
       commit('setNetworNodes', res.networkNodes);
     } catch (error) {
       console.log("Error in getNetworkNodes action: " + error);
