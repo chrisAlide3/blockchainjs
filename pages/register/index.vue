@@ -28,7 +28,7 @@
             @createWallet="createWallet" 
             />
 
-            <WalletDetail
+            <WalletList
             v-else          
             @createWallet="createWallet"
             @deleteWallet="deleteWallet"
@@ -126,7 +126,7 @@ f     <v-stepper dark v-model="e1" vertical>
               @createWallet="createWallet" 
               />
 
-            <WalletDetail
+            <WalletList
               v-else
               @createWallet="createWallet"
               @deleteWallet="deleteWallet"
@@ -208,7 +208,7 @@ f     <v-stepper dark v-model="e1" vertical>
 
 <script>
   import CreateWallet from '../../components/wallet/createWallet'
-  import WalletDetail from '../../components/wallet/walletDetail'
+  import WalletList from '../../components/wallet/walletList'
   import RegisterNode from '../../components/network/RegisterNode'
   import NetworkNodesList from '../../components/network/NetworkNodesList'
   import Start from '../../components/blockchain/Start'
@@ -216,7 +216,7 @@ f     <v-stepper dark v-model="e1" vertical>
   export default {
     components: {
       CreateWallet,
-      WalletDetail,
+      WalletList,
       RegisterNode,
       NetworkNodesList,
       Start
