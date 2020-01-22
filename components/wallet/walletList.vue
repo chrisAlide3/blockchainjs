@@ -23,7 +23,7 @@
       <v-card-text
         class="text-xs-center"
         v-for="(privateKey, index) in walletAddressesWithoutActiveAddress"
-        :key="index"
+        :key="privateKey"
       >
         <v-layout row wrap>
           <v-flex xs12 pr-4>
@@ -102,8 +102,6 @@ export default {
     },
 
     activePrivateKey () {
-      console.log("activePrivateKey: ", this.$store.getters.privateKey);
-           
       return this.$store.getters.privateKey
     },
 
@@ -118,7 +116,6 @@ export default {
 
   methods: {
     createWallet () {
-      console.log("generate wallet clicked");  
       this.$emit('createWallet');
     },
 
@@ -139,10 +136,12 @@ export default {
       const index = this.selected.indexOf(this.activePrivateKey);
       if (index < 0) {
         this.$emit("switchActiveWallet", {privateKey: this.selected[0]});
+
         this.selected = [];
       }else {
         console.log("Selected wallet is already active");
       }
+      this.selected = [];
     },
 
     getPublicKey (privateKey) {

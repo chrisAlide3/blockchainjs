@@ -10,7 +10,7 @@
            <WalletDetail :privateKeyObj="{privateKey: activePrivateKey, balance: balanceOfActiveWallet}"/>
           </v-card-text>
           <div>
-            <v-btn color="primary">See all</v-btn>
+            <v-btn @click="$router.push('/wallet')" color="primary">See all</v-btn>
           </div>
         </v-card>
       </v-flex>
