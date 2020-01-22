@@ -34,7 +34,17 @@
             text-truncate
             xs12
           >
-            <p @mouseover="hoverSender">Sender: {{ senderAddress }}</p>
+            <!-- <p @mouseover="hoverSender">Sender: {{ senderAddress }}</p> -->
+            <v-textarea 
+              @mouseover="hoverSender"
+              label="Sender Address"
+              :value="senderAddress"
+              rows=1
+              auto-grow
+              readonly
+              outline
+            >
+            </v-textarea>
           </v-flex>
           <v-flex
             xs12
