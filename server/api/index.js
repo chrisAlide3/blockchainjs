@@ -54,7 +54,7 @@ router.post('/delete-wallet', function (req, res) {
       walletAddress: bitcoin.walletAddress,
     })
   } catch (error) {
-    
+    res.status(500).send('Error deleting wallet')
   }
 })
 
@@ -84,26 +84,17 @@ router.post('/transaction', function(req, res) {
 
 router.post('/transaction/broadcast', function(req, res) {
   // Verify if enough balance if not mining reward
-  const addressTransactions = bitcoin.getTransactionsByAddress(req.body.sender);
-  console.log("req.body.sender: " + req.body.sender);
+  const sender = req.body.sender;
   let balance = 0;
-  // Calculate balance
-  if (req.body.sender !== '00') {
-    addressTransactions.forEach(transaction => {
-      if (transaction.sender === req.body.sender) {
-        balance -= transaction.amount;
-      }
-      if (transaction.recipient === req.body.sender) {
-        balance += transaction.amount;
-      }
-    })
+  if (sender !== '00') {
+    balance = bitcoin.getBalanceByAddress(sender);
   }
+  // NetworkNodes available
   if (req.body.amount <= balance || req.body.sender === '00') {
     const newTransaction = bitcoin.createTransaction(req.body.amount, req.body.sender, req.body.recipient);
-    // newTransaction.signature = bitcoin.signTransaction(newTransaction, signingKey);
-    // if (bitcoin.transactionIsValid(newTransaction)) {
-      bitcoin.addTransactionToPendingTransaction(newTransaction);
-      // Broadcast transaction
+    bitcoin.addTransactionToPendingTransaction(newTransaction);
+    // Broadcast transaction if Networknodes available
+    if (bitcoin.networkNodes.length > 0) {
       const reqNodesPromises = [];
       bitcoin.networkNodes.forEach(networkNodeUrl => {
         const requestOptions = {
@@ -123,22 +114,21 @@ router.post('/transaction/broadcast', function(req, res) {
         })
         .catch(err => {
           res.json({
-            note: "Transaction added but couldn't broadcast to all network nodes",
+            note: "Transaction added and broadcasted to some network nodes",
             newTransaction: newTransaction
           })
         });
-    // res.json({
-    //   note: "Transaction added without broadcast",
-    //   newTransaction: newTransaction
-    // });
+    // No networkNode
+    }else {
+      res.json({
+        note: "Transaction added without broadcast",
+        newTransaction: newTransaction
+      });
+    }
+  // Not enough balance
   }else {
-    res.json({
-      note: 'Your balance is insuffisent',
-      balance: balance
-    })
-    
+    res.status(403).send('Insuffisent balance');
   }
-  
 })
 
 router.get('/mine', function (req, res) {
@@ -153,105 +143,112 @@ router.get('/mine', function (req, res) {
   const hash = bitcoin.hashBlock(previousHash, currentBlockData, nonce);
 
   const newBlock = bitcoin.createNewBlock(nonce, previousHash, hash);
-  //const miningRewardTransaction = bitcoin.createTransaction(12.5, "00", bitcoin.walletAddress);
   
-  // Broadcast new block to network nodes
-  const reqNodesPromises = [];
-  bitcoin.networkNodes.forEach(networkNodeUrl => {
-    const requestOptions = {
-      uri: networkNodeUrl + '/receive-new-block',
-      method: 'POST',
-      body: { newBlock: newBlock },
-      json: true
-    };
-    reqNodesPromises.push(rp(requestOptions));
-  })
-  Promise.all(reqNodesPromises)
-    .then(data => {
-      console.log("Data from broadcast block: " + JSON.stringify(data));
+  // Broadcast new block to network nodes if available
+  if (bitcoin.networkNodes.length > 0) {
+    const reqNodesPromises = [];
+    bitcoin.networkNodes.forEach(networkNodeUrl => {
+      const requestOptions = {
+        uri: networkNodeUrl + '/receive-new-block',
+        method: 'POST',
+        body: { newBlock: newBlock },
+        json: true
+      };
+      reqNodesPromises.push(rp(requestOptions));
     })
-    .catch(err => {
-        console.log("Error from broadcast block: " + JSON.stringify(err));
-    })
-    
-    // Broadcast mining reward transaction to network nodes
-    const miningRewardTransaction = {
-      amount: 12.5,
-      sender: '00',
-      recipient: bitcoin.walletAddress
-    }
-    
-    const requestOptions = {
-      uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
-      method: 'POST',
-      body: miningRewardTransaction,
-      json: true
-    }
-    rp(requestOptions)
+    Promise.all(reqNodesPromises)
       .then(data => {
-        console.log("Mining reward broadcasted: " + JSON.stringify(data));
-        res.json({
-          note: "Block mined succesfully. Mining reward added",
-          block: newBlock,
-          miningReward: data.newTransaction  
-        })
+        console.log('New block broadcasted to all network nodes');
       })
       .catch(err => {
-        console.log("Error in broadcast maining reward: " + err);
-        res.json({
-          note: "Block mined succesfully. Error adding mining reward",
-          block: newBlock,
-          miningReward: null
-        })
+        console.log('New block broadcasted to some network nodes');
       })
+  }
     
+  // Add and Broadcast mining reward transaction
+  const miningRewardTransaction = {
+    amount: 12.5,
+    sender: '00',
+    recipient: bitcoin.walletAddress
+  }
+  
+  const requestOptions = {
+    uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
+    method: 'POST',
+    body: miningRewardTransaction,
+    json: true
+  }
+  rp(requestOptions)
+    .then(data => {
+      console.log("Mining reward broadcasted: " + JSON.stringify(data));
+      res.json({
+        note: "Block mined succesfully. Mining reward added",
+        block: newBlock,
+        miningReward: data.newTransaction  
+      })
+    })
+    .catch(err => {
+      console.log("Error in broadcast maining reward: " + err);
+      res.json({
+        note: "Block mined succesfully. Error adding mining reward",
+        block: newBlock,
+        miningReward: null
+      })
+    })
+  
 })
 
 router.post("/register-and-broadcast-node", function(req, res) {
   console.log("req.body register: " + JSON.stringify(req.body));
   
   const newNodeUrl = req.body.newNodeUrl;
-  const reqNodesPromises = [];
 
   if (bitcoin.networkNodes.indexOf(newNodeUrl) == -1) {
     bitcoin.networkNodes.push(newNodeUrl);
     bitcoin.writeBlockchainFile(bitcoin.chain, bitcoin.pendingTransactions, bitcoin.networkNodes);
   }
 
-  bitcoin.networkNodes.forEach(networkNodeUrl => {
-    const requestOptions = {
-      uri: networkNodeUrl + '/register-node',
-      method: 'POST',
-      body: { newNodeUrl: newNodeUrl },
-      json: true
-    };
-    reqNodesPromises.push(rp(requestOptions));
-  })
-
-    Promise.all(reqNodesPromises)
-      .then(data => {
-        const bulkRegisterOptions = {
-          uri: newNodeUrl + '/register-nodes-bulk',
-          method: 'POST',
-          body: { allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl] },
-          json: true
-        }
-        return rp(bulkRegisterOptions);
-      })
+  // Broadcast new node to network nodes if available
+  if (bitcoin.networkNodes.length > 0) {
+    const reqNodesPromises = [];
+    bitcoin.networkNodes.forEach(networkNodeUrl => {
+      const requestOptions = {
+        uri: networkNodeUrl + '/register-node',
+        method: 'POST',
+        body: { newNodeUrl: newNodeUrl },
+        json: true
+      };
+      reqNodesPromises.push(rp(requestOptions));
+    })
+  
+      Promise.all(reqNodesPromises)
         .then(data => {
-          res.json({
-            note: 'New node registered with network',
-            node: newNodeUrl
-          });
+          const bulkRegisterOptions = {
+            uri: newNodeUrl + '/register-nodes-bulk',
+            method: 'POST',
+            body: { allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl] },
+            json: true
+          }
+          return rp(bulkRegisterOptions);
         })
+          .then(data => {
+            res.json({
+              note: 'New node registered with network',
+              node: newNodeUrl
+            });
+          })
+          .catch(err => {
+            console.log(err);
+            res.send('Error registering nodes-bulk');
+          })
         .catch(err => {
           console.log(err);
-          res.send('Error registering nodes-bulk');
+          res.send('Error register-node');
         })
-      .catch(err => {
-        console.log(err);
-        res.send('Error register-node');
-      })
+  }else {
+    res.send('New node registered');
+  }
+  
 })
 
 router.post('/register-node', function(req, res) {

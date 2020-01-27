@@ -1,63 +1,57 @@
 <template>
-  <div>
-    <v-layout>
-      <v-flex xs12 text-truncate>
-        <v-card>
-          <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">My Details</h3>
-              <v-card-text>
-                <p>Wallet Address: {{ walletAddress }}</p>
-                <p>Balance: {{ balance.toFixed(4) }}</p>
-                <p>Current NodeUrl: {{ currentNodeUrl}}</p>
-              </v-card-text>
-            </div>
-          </v-card-title>
+  <v-expansion-panel v-model="panel" expand>
+    <v-expansion-panel-content
+      v-for="(item,i) in items"
+      :key="i"
+    >
+      <template v-slot:header>
+        <h1>{{ item }}</h1>
+      </template>
 
-          <v-card-actions>
-            <v-btn flat color="orange" @click="addTransaction">Add Transaction</v-btn>
-            <v-btn flat color="orange" @click="mineBlock">Mine Block</v-btn>
-          </v-card-actions>
-        </v-card>
-        <br>
-      </v-flex>
-  </v-layout>
+      <!-- Active Wallet -->
+      <v-card v-if="item === 'Active Wallet'">
+        <v-card-text>
+          <WalletDetail :privateKeyObj="{privateKey: activePrivateKey, balance: activeBalance}" />
+        </v-card-text>
+      </v-card>
 
-    <v-expansion-panel>
-      <v-expansion-panel-content
-        v-for="(item,i) in items"
-        :key="i"
-      >
-        <template v-slot:header>
-          <h1>{{ item }}</h1>
-        </template>
-        <v-card v-if="item === 'Chain'">
-          <v-layout justify-end class="mr-5">
-            <span>Sort:</span><v-icon @click="sort='Desc'" v-if="sort==='Asc'">keyboard_arrow_down</v-icon>
-            <v-icon @click="sort='Asc'" v-if="sort==='Desc'">keyboard_arrow_up</v-icon>
-          </v-layout>
-          <!-- Chain ascending -->
-          <div v-if="sort==='Asc'">
-            <v-card-text
-            v-for="block in chain"
-            :key="block.id"
-            >
-              <block :block="block"></block>
-            </v-card-text>
-          </div>
-          <!-- Chain descending -->
-          <div v-if="sort==='Desc'">
-            <v-card-text
-            v-for="block in chainReversed"
-            :key="block.id"
-            >
-              <block :block="block"></block>
-            </v-card-text>
-          </div>
-          
-        </v-card>
+      <!-- Wallet -->
+      <v-card v-if="item === 'Wallets'">
+        <v-card-text>
+          <WalletList />
+        </v-card-text>
+      </v-card>
 
-        <v-card v-if="item === 'Pending Transactions'">
+      <!-- Chain -->
+      <v-card v-if="item === 'Chain'">
+        <v-layout justify-end class="mr-5">
+          <span>Sort:</span><v-icon @click="sort='Desc'" v-if="sort==='Asc'">keyboard_arrow_down</v-icon>
+          <v-icon @click="sort='Asc'" v-if="sort==='Desc'">keyboard_arrow_up</v-icon>
+        </v-layout>
+        <!-- Chain ascending -->
+        <div v-if="sort==='Asc'">
+          <v-card-text
+          v-for="block in chain"
+          :key="block.id"
+          >
+            <block :block="block"></block>
+          </v-card-text>
+        </div>
+        <!-- Chain descending -->
+        <div v-if="sort==='Desc'">
+          <v-card-text
+          v-for="block in chainReversed"
+          :key="block.id"
+          >
+            <block :block="block"></block>
+          </v-card-text>
+        </div>  
+      </v-card>
+
+      <!-- Pending Transactions -->
+      <v-card v-if="item === 'Pending Transactions'">
+        <div v-if="pendingTransactions.length > 0">
+
           <v-layout justify-end class="mr-5">
             <span>Sort:</span><v-icon @click="sort='Desc'" v-if="sort==='Asc'">keyboard_arrow_down</v-icon>
             <v-icon @click="sort='Asc'" v-if="sort==='Desc'">keyboard_arrow_up</v-icon>
@@ -79,39 +73,56 @@
             >
               <Transaction :transaction="transaction"></Transaction>
             </v-card-text>
+            </div>
           </div>
-          
-        </v-card>
 
-        <v-card v-if="item === 'Network Nodes'">
-          <v-card-text
-            v-for="(networkUrl, i) in networkNodes"
-            :key="i"
-          >
-            <div class="ml-3"> {{ networkUrl }}</div>
+        <div v-else class="text-xs-center red--text mb-2">
+          <h3>No Pending Transactions</h3>
+        </div>
+      </v-card>
+
+      <!-- Network Nodes -->
+      <v-card v-if="item === 'Network Nodes'">
+        <div v-if="networkNodes.length > 0">
+          <v-card-text>
+            <NetworkNodesList />
           </v-card-text>
-        </v-card>
+        </div>
 
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-  </div>
+        <div v-else>
+          <v-card-text>
+            <RegisterNode />
+          </v-card-text>
+        </div>       
+      </v-card>
+
+    </v-expansion-panel-content>
+  </v-expansion-panel>
 </template>
 
 <script>
 import Block from '../../components/blockchain/block'
 import Transaction from '../../components/transactions/transaction'
+import WalletDetail from '../../components/wallet/walletDetail'
+import WalletList from '../../components/wallet/walletList'
+import NetworkNodesList from '../../components/network/NetworkNodesList'
+import RegisterNode from '../../components/network/RegisterNode'
 
 export default { 
-
   components: {
     Block,
-    Transaction
+    Transaction,
+    WalletDetail,
+    WalletList,
+    NetworkNodesList,
+    RegisterNode
   },
 
   data () {
     return {
-      items: ['Chain', 'Pending Transactions', 'Network Nodes'],
-      sort: 'Asc'
+      items: ['Active Wallet', 'Wallets', 'Chain', 'Pending Transactions', 'Network Nodes'],
+      sort: 'Asc',
+      panel: [true],
     }
   },
 
@@ -148,11 +159,11 @@ export default {
       return this.$store.getters.currentNodeUrl;
     },
 
-    walletAddress () {
-      return this.$store.getters.walletAddress;
+    activePrivateKey () {
+      return this.$store.getters.privateKey;
     },
 
-    balance () {
+    activeBalance () {
       return this.$store.getters.balance;
     }
 
@@ -165,7 +176,7 @@ export default {
 
     mineBlock () {
       this.$store.dispatch('mineBlock');
-    }
+    },
   }
 }
 </script>

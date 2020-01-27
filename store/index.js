@@ -108,12 +108,22 @@ export const actions = {
     console.log("addTransaction in store: " + JSON.stringify(transaction));
     try {
       const response = await this.$axios.$post(this.getters.currentNodeUrl + '/transaction/broadcast', transaction);
+      console.log("Response from addTransaction: ", response);
+      // if (response.newTransaction === undefined) {
+      //   throw new Error('Insufficient balance')
+      // }
       commit('addTransactionToPendingTransactions', response.newTransaction);
       dispatch('calculateNewBalance', transaction);
+      commit('setError', '');
     } catch (error) {
-      console.log("Error in action addTransaction");
+        if (error.response) {
+          commit('setError', error.response.data);
+        }else if (error.request) {
+          console.log(error.request);
+        }else {
+          console.log('error', error.message);
+        }
     }
-    
   },
 
   calculateNewBalance ({ commit }, transaction) {
@@ -156,17 +166,22 @@ export const actions = {
       const res = await this.$axios.$get(this.getters.currentNodeUrl + '/mine');
       console.log("New block from mining: " + JSON.stringify(res.block));
       console.log("Reward transaction from mining: " + JSON.stringify(res.miningReward))
-      //dispatch('loadBlockchain');
+      commit('setError', '');
       commit('addBlockToChain', res.block);
       commit('clearPendingTransactions');
       if (res.miningReward !== null) {
         commit('addTransactionToPendingTransactions', res.miningReward)
         dispatch('calculateNewBalance', res.miningReward);  
       }
-      //commit('overwritePendingTransactions', res.pendingTransactions);
 
     } catch (error) {
-      console.log("Error in mineBlock action: " + error)   
+        if (error.response) {
+          commit('setError', error.response.data);
+        }else if (error.request) {
+          console.log(error.request);
+        }else {
+          console.log('Error', error.message);
+        }
     }
     
   },
@@ -198,8 +213,15 @@ export const actions = {
       }
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
+      commit('setError', '');
     } catch (error) {
-      console.log('Error in action deleteWallet');
+      if (error.response) {
+        commit('setError', error.response.data);
+      }else if (error.request) {
+        console.log(error.request);
+      }else {
+        console.log('Error', error.message);
+      }
     }
   },
 

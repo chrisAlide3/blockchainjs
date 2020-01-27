@@ -136,7 +136,7 @@ f     <v-stepper dark v-model="e1" vertical>
           <span v-if="error!==''" class="red--text">{{ error }}</span>
           <br>
           <v-btn 
-            color="primary"
+            color="orange"
             :disabled="!hasWallet"
             @click="nextStep">
             Continue
@@ -266,10 +266,10 @@ f     <v-stepper dark v-model="e1" vertical>
             this.error = '';
             this.e1 = 2;
           }
-        }
-        
-        if (this.e1 === 2) {
+        }else if (this.e1 === 2) {
           this.e1 = 3;
+        }else if (this.e1 === 3) {
+          this.$router.push('/blockchain');
         }
       },
 

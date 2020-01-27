@@ -2,7 +2,6 @@
   <v-card class="mt-2">
     <!-- Active wallet -->
     <v-layout row justify-center>
-      <p>Selected: {{ selected }}</p>
       <v-card-title>
         <h3>Active Wallet</h3>
       </v-card-title>
@@ -55,7 +54,7 @@
           <v-btn
             @click="switchActiveWallet"
             color="green"
-            :disabled="selected.length !== 1"
+            :disabled="selected.length !== 1 || selected[0] === activePrivateKey"
           >
             Switch Active Wallet
           </v-btn>
@@ -136,12 +135,11 @@ export default {
       const index = this.selected.indexOf(this.activePrivateKey);
       if (index < 0) {
         this.$emit("switchActiveWallet", {privateKey: this.selected[0]});
-
         this.selected = [];
       }else {
         console.log("Selected wallet is already active");
+        this.selected = [];
       }
-      this.selected = [];
     },
 
     getPublicKey (privateKey) {

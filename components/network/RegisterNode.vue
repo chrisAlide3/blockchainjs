@@ -1,8 +1,8 @@
 <template>
   <v-card>
-    <v-img
+    <!-- <v-img
       :src="require('../../assets/images/networkNodes.png')" aspect-ratio="4"
-    ></v-img>
+    ></v-img> -->
 
     <v-container>
       <v-layout justify-center>
