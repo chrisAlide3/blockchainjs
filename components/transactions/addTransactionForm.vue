@@ -84,13 +84,18 @@
             xs12
             md2
           >
-
             <v-btn
               color="success"
               @click="addTransaction"
               :disabled="!valid"
               >Send</v-btn>
 
+          </v-flex>
+        </v-layout>
+
+        <v-layout row wrap>
+          <v-flex xs12>
+            <p class="red--text">{{ error }}</p>
           </v-flex>
         </v-layout>
       </v-container>
@@ -141,7 +146,11 @@
 
       balance () {
         return this.$store.getters.balance
-      }
+      },
+
+      error () {
+        return this.$store.getters.error;
+      },
     },
 
     methods: {
