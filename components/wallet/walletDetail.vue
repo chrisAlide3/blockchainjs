@@ -36,13 +36,14 @@
 
       <v-flex xs1 pt-4 grow>
         <v-icon small @click="copyPrivateKey">mdi-content-copy</v-icon>
-        <v-icon small @click="showBarcode('privateKey')">mdi-barcode</v-icon>
+        <v-icon small @click="showQrcode('privateKey')">mdi-barcode</v-icon>
       </v-flex>
 
       <v-flex xs1>
         <v-text-field
           label="Balance"
           readonly
+          reverse
           :value="privateKeyObj.balance"
         >
         </v-text-field>
@@ -78,19 +79,64 @@
 
       <v-flex xs1 pt-4>
         <v-icon small @click="copyWalletAddress">mdi-content-copy</v-icon>
-        <v-icon small @click="showBarcode('privateKey')">mdi-barcode</v-icon>
+        <v-icon small @click="showQrcode('WalletAddress')">mdi-barcode</v-icon>
       </v-flex>
 
     </v-layout>
+
+    <!-- QR-Code dialog -->
+    <div class="text-xs-center">
+      <v-dialog
+        v-model="qrcodeDialog"
+        width="500"
+      >
+        <v-card>
+          <v-card-title
+            class="headline orange justify-center"
+            primary-title
+          >
+            {{ qrcodeTitle }}
+          </v-card-title>
+
+          <v-card-text class="text-xs-center" >
+            <qrcode-vue :value="qrcodeValue" :size="300" level="H"></qrcode-vue>
+          </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions class="hidden-print-only">
+            <v-spacer></v-spacer>
+            <v-btn
+              color="orange"
+              flat
+              @click="printQrcode"
+            >
+              Print
+            </v-btn>
+            <v-btn
+              color="primary"
+              flat
+              @click="qrcodeDialog = false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </v-container>
 </template>
 
 <script>
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
+import QrcodeVue from 'qrcode.vue'
 
 export default {
-  
+  components: {
+    QrcodeVue,
+  },
+
   props: {
     privateKeyObj: { // privateKey, balance
       type: Object,
@@ -105,7 +151,10 @@ export default {
       password: this.privateKeyObj.privateKey,
       showPrivateKey: false,
       showPrivateKeyCopyMessage: false,
-      showWalletCopyMessage: false
+      showWalletCopyMessage: false,
+      qrcodeDialog: false,
+      qrcodeTitle: '',
+      qrcodeValue: '',
     }
   },
 
@@ -157,9 +206,21 @@ export default {
       }
     },
 
-    showBarcode (field) {
-      
+    showQrcode (field) {
+      if (field === 'privateKey') {
+        this.qrcodeTitle = 'QR-Code for Private Key'
+        this.qrcodeValue = this.privateKeyObj.privateKey;
+        this.qrcodeDialog = true;
+      }else {
+        this.qrcodeTitle = 'QR-Code for Wallet Address'
+        this.qrcodeValue = this.getPublicKey(this.privateKeyObj.privateKey);
+        this.qrcodeDialog = true;
+      }
     },
+
+    printQrcode () {
+      window.print();
+    }
   }
 }
 </script>
