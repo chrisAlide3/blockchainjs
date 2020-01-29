@@ -1,5 +1,15 @@
 <template>
   <v-app dark>
+    <v-content>
+      <!-- <v-container> -->
+        <Header />
+        <nuxt />
+      <!-- </v-container> -->
+  </v-content>
+
+  </v-app>
+  
+  <!-- <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -83,11 +93,17 @@
     >
       <span>&copy; 2019</span>
     </v-footer>
-  </v-app>
+  </v-app> -->
 </template>
 
 <script>
+import Header from '../components/global/Header'
+
 export default {
+  components: {
+    Header,
+  },
+
   data() {
     return {
       clipped: false,
