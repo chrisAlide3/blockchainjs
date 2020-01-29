@@ -93,8 +93,8 @@
 
       <v-spacer></v-spacer>
 
-      <div class="hidden-sm-and-down">
-        <div v-for="item in items" :key="item.title">
+      <!-- <div class="hidden-sm-and-down"> -->
+        <div v-for="item in items" :key="item.title" class="hidden-sm-and-down">
           <!-- Buttons for Items without subItems -->
           <div v-if="item.subItems.length === 0">
             <v-btn flat @click="$router.push(item.route)">
@@ -134,7 +134,6 @@
             </v-menu>
           </div>
         </div>
-      </div>      
     </v-toolbar>
   </nav>
 </template>
