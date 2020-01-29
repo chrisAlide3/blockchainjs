@@ -81,7 +81,7 @@
     </v-navigation-drawer>
 
     <!-- Application Toolbar -->
-    <v-toolbar fixed app dark color="orange">
+    <v-toolbar fixed app light color="orange">
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
       
       <v-avatar
@@ -92,7 +92,7 @@
         <img :src="require('../../assets/images/bitcoinLogo.png')" >
       </v-avatar>
 
-      <v-toolbar-title @click="$router.push('/')" :style="{cursor: 'pointer'}" class="white--text">Pseudo-Coin</v-toolbar-title>
+      <v-toolbar-title @click="$router.push('/')" :style="{cursor: 'pointer'}">Pseudo-Coin</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -110,7 +110,6 @@
             <template v-slot:activator="{ on }">
               <v-btn
                 flat
-                dark
                 v-on="on"
               >
               <v-icon class="mr-2">{{ item.icon }}</v-icon>
@@ -124,7 +123,14 @@
                 :key="subItem.title"
                 @click="$router.push(subItem.route)"
               >
+                <v-list-tile-action>
+                  <v-icon>
+                    {{ subItem.icon }}
+                  </v-icon>
+                </v-list-tile-action>
+
                 <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                
               </v-list-tile>
             </v-list>
           </v-menu>
@@ -140,15 +146,15 @@
       return {
         drawer: false,
         items: [
-          { title: 'Register', icon: 'dashboard', route: '/register', subItems: []},
-          { title: 'Wallets', icon: 'dashboard', route: '/wallet', subItems: []},
-          { title: 'Blockchain', icon: 'question_answer', route: '', subItems: [
-            { title: 'Blockchain', icon: 'dashboard', route: '/blockchain'},
-            { title: 'Cockpit', icon: 'dashboard', route: '/cockpit'},
-            { title: 'Mine Block', icon: 'dashboard', route: '/mine'}
+          { title: 'Register', icon: 'mdi-account-plus', route: '/register', subItems: []},
+          { title: 'Wallets', icon: 'mdi-wallet', route: '/wallet', subItems: []},
+          { title: 'Blockchain', icon: 'mdi-link-lock', route: '', subItems: [
+            { title: 'Blockchain', icon: 'mdi-link-lock', route: '/blockchain'},
+            { title: 'Cockpit', icon: 'mdi-view-dashboard', route: '/cockpit'},
+            { title: 'Mine Block', icon: 'mdi-link-lock', route: '/mine'}
           ]
           },
-          { title: 'Transactions', icon: 'dashboard', route: '/transactions', subItems: []},
+          { title: 'Transactions', icon: 'mdi-database-import', route: '/transactions', subItems: []},
         ],
       }
     }
