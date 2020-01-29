@@ -26,22 +26,30 @@
       <v-divider />
 
       <v-list dense class="pt-0">
-        <!-- Expandable when subItems available -->
-        <!-- <template v-for="item in menuItems">
-          <v-list-group v-if="item.subItems" :key="item.title" no-action>
+        <div v-for="item in items" :key="item.title">
+          <!-- Items without Submenus -->
+          <v-list-tile v-if="item.subItems.length === 0"
+            :key="item.title"
+            router
+            :to="item.route"
+            exact
+          >
+            <v-list-tile-action>
+              <v-icon>
+                {{ item.icon }}
+              </v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <!-- Item with Subitems -->
+          <v-list-group v-if="item.subItems.length > 0" no-action>
             <template v-slot:activator>
               <v-list-tile>
                 <v-list-tile-action>
-                  <v-avatar v-if="item.avatar && user.imgUrl"
-                    class="mr-2"
-                    size="36px"
-                  >
-                    <img
-                      :src="user.imgUrl"
-                      alt="Avatar"
-                    >
-                  </v-avatar>
-                  <v-icon v-else>
+                  <v-icon>
                     {{ item.icon }}
                   </v-icon>
                 </v-list-tile-action>
@@ -51,14 +59,13 @@
                 </v-list-tile-content>
               </v-list-tile>
             </template>
-
+            <!-- Subitems -->
             <template v-for="subItem in item.subItems">
               <v-list-tile
                 :key="subItem.title"
                 router
                 :to="subItem.route"
                 exact
-                @click="profileMenu(subItem)"
               >
                 <v-list-tile-action>
                   <v-icon>{{ subItem.icon }}</v-icon>
@@ -68,30 +75,12 @@
                 </v-list-tile-content>
               </v-list-tile>
             </template>
-          </v-list-group> -->
-        <!-- Normal links when no subItems -->
-          <v-list-tile v-for="item in items"
-            :key="item.title"
-            router
-            :to="item.route"
-            exact
-          >
-            <v-list-tile-action>
-              <v-icon v-if="!item.avatar">
-                {{ item.icon }}
-              </v-icon>
-            </v-list-tile-action>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        <!-- </template> -->
+          </v-list-group>
+        </div>
       </v-list>
-
     </v-navigation-drawer>
 
-
+    <!-- Application Toolbar -->
     <v-toolbar fixed app dark color="orange">
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
       
@@ -108,13 +97,14 @@
       <v-spacer></v-spacer>
 
       <div v-for="item in items" :key="item.title">
+        <!-- Buttons for Items without subItems -->
         <div v-if="item.subItems.length === 0">
           <v-btn flat @click="$router.push(item.route)">
             <v-icon class="mr-2">{{ item.icon }}</v-icon>
             {{ item.title }}
           </v-btn>  
         </div>
-
+        <!-- Menu Dropdown for items with Subitems -->
         <div v-else>
           <v-menu offset-y>
             <template v-slot:activator="{ on }">
@@ -139,11 +129,7 @@
             </v-list>
           </v-menu>
         </div>
-        
-      </div>
-
-      <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
-      
+      </div>      
     </v-toolbar>
   </nav>
 </template>

@@ -1,103 +1,105 @@
 <template>
-  <v-expansion-panel v-model="panel" expand>
-    <v-expansion-panel-content
-      v-for="(item,i) in items"
-      :key="i"
-    >
-      <template v-slot:header>
-        <h1>{{ item }}</h1>
-      </template>
+  <v-container fluid>
+    <v-expansion-panel v-model="panel" expand>
+      <v-expansion-panel-content
+        v-for="(item,i) in items"
+        :key="i"
+      >
+        <template v-slot:header>
+          <h1>{{ item }}</h1>
+        </template>
 
-      <!-- Active Wallet -->
-      <v-card v-if="item === 'Active Wallet'">
-        <v-card-text>
-          <WalletDetail :privateKeyObj="{privateKey: activePrivateKey, balance: activeBalance}" />
-        </v-card-text>
-      </v-card>
-
-      <!-- Wallet -->
-      <v-card v-if="item === 'Wallets'">
-        <v-card-text>
-          <WalletList />
-        </v-card-text>
-      </v-card>
-
-      <!-- Chain -->
-      <v-card v-if="item === 'Chain'">
-        <v-layout justify-end class="mr-5">
-          <span>Sort:</span><v-icon @click="sort='Desc'" v-if="sort==='Asc'">keyboard_arrow_down</v-icon>
-          <v-icon @click="sort='Asc'" v-if="sort==='Desc'">keyboard_arrow_up</v-icon>
-        </v-layout>
-        <!-- Chain ascending -->
-        <div v-if="sort==='Asc'">
-          <v-card-text
-          v-for="block in chain"
-          :key="block.id"
-          >
-            <block :block="block"></block>
+        <!-- Active Wallet -->
+        <v-card v-if="item === 'Active Wallet'">
+          <v-card-text>
+            <WalletDetail :privateKeyObj="{privateKey: activePrivateKey, balance: activeBalance}" />
           </v-card-text>
-        </div>
-        <!-- Chain descending -->
-        <div v-if="sort==='Desc'">
-          <v-card-text
-          v-for="block in chainReversed"
-          :key="block.id"
-          >
-            <block :block="block"></block>
+        </v-card>
+
+        <!-- Wallet -->
+        <v-card v-if="item === 'Wallets'">
+          <v-card-text>
+            <WalletList />
           </v-card-text>
-        </div>  
-      </v-card>
+        </v-card>
 
-      <!-- Pending Transactions -->
-      <v-card v-if="item === 'Pending Transactions'">
-        <div v-if="pendingTransactions.length > 0">
-
+        <!-- Chain -->
+        <v-card v-if="item === 'Chain'">
           <v-layout justify-end class="mr-5">
             <span>Sort:</span><v-icon @click="sort='Desc'" v-if="sort==='Asc'">keyboard_arrow_down</v-icon>
             <v-icon @click="sort='Asc'" v-if="sort==='Desc'">keyboard_arrow_up</v-icon>
           </v-layout>
-          <!-- Transactions ascending -->
+          <!-- Chain ascending -->
           <div v-if="sort==='Asc'">
             <v-card-text
-              v-for="transaction in pendingTransactions"
-              :key="transaction.transactionId"
+            v-for="block in chain"
+            :key="block.id"
             >
-              <Transaction :transaction="transaction"></Transaction>
+              <block :block="block"></block>
             </v-card-text>
           </div>
-          <!-- Transactions descending -->
+          <!-- Chain descending -->
           <div v-if="sort==='Desc'">
             <v-card-text
-              v-for="transaction in pendingTransactionsReversed"
-              :key="transaction.transactionId"
+            v-for="block in chainReversed"
+            :key="block.id"
             >
-              <Transaction :transaction="transaction"></Transaction>
+              <block :block="block"></block>
             </v-card-text>
+          </div>  
+        </v-card>
+
+        <!-- Pending Transactions -->
+        <v-card v-if="item === 'Pending Transactions'">
+          <div v-if="pendingTransactions.length > 0">
+
+            <v-layout justify-end class="mr-5">
+              <span>Sort:</span><v-icon @click="sort='Desc'" v-if="sort==='Asc'">keyboard_arrow_down</v-icon>
+              <v-icon @click="sort='Asc'" v-if="sort==='Desc'">keyboard_arrow_up</v-icon>
+            </v-layout>
+            <!-- Transactions ascending -->
+            <div v-if="sort==='Asc'">
+              <v-card-text
+                v-for="transaction in pendingTransactions"
+                :key="transaction.transactionId"
+              >
+                <Transaction :transaction="transaction"></Transaction>
+              </v-card-text>
             </div>
+            <!-- Transactions descending -->
+            <div v-if="sort==='Desc'">
+              <v-card-text
+                v-for="transaction in pendingTransactionsReversed"
+                :key="transaction.transactionId"
+              >
+                <Transaction :transaction="transaction"></Transaction>
+              </v-card-text>
+              </div>
+            </div>
+
+          <div v-else class="text-xs-center red--text mb-2">
+            <h3>No Pending Transactions</h3>
+          </div>
+        </v-card>
+
+        <!-- Network Nodes -->
+        <v-card v-if="item === 'Network Nodes'">
+          <div v-if="networkNodes.length > 0">
+            <v-card-text>
+              <NetworkNodesList />
+            </v-card-text>
           </div>
 
-        <div v-else class="text-xs-center red--text mb-2">
-          <h3>No Pending Transactions</h3>
-        </div>
-      </v-card>
+          <div v-else>
+            <v-card-text>
+              <RegisterNode />
+            </v-card-text>
+          </div>       
+        </v-card>
 
-      <!-- Network Nodes -->
-      <v-card v-if="item === 'Network Nodes'">
-        <div v-if="networkNodes.length > 0">
-          <v-card-text>
-            <NetworkNodesList />
-          </v-card-text>
-        </div>
-
-        <div v-else>
-          <v-card-text>
-            <RegisterNode />
-          </v-card-text>
-        </div>       
-      </v-card>
-
-    </v-expansion-panel-content>
-  </v-expansion-panel>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-container>
 </template>
 
 <script>
