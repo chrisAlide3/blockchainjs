@@ -116,7 +116,7 @@
 
     <!-- VERTICAL FOR SMALLER SCREENS -->
     <div class="hidden-md-and-up">
-f     <v-stepper dark v-model="e1" vertical>
+       <v-stepper dark v-model="e1" vertical>
         <v-stepper-step :complete="e1 > 1" step="1" :color="hasWallet ? 'green' : 'orange'">Create Wallet</v-stepper-step>
 
         <v-stepper-content step="1">
