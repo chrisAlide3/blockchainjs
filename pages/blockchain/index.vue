@@ -99,6 +99,12 @@
 
       </v-expansion-panel-content>
     </v-expansion-panel>
+
+    <v-layout>
+      <v-card-actions class="mt-3">
+        <v-btn @click="mineBlock" color='success'>Mine Block</v-btn>
+      </v-card-actions>
+    </v-layout>
   </v-container>
 </template>
 
