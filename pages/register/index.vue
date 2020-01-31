@@ -82,7 +82,13 @@
           >
             Back
           </v-btn>
-
+          <v-btn
+            light
+            color="yellow"
+            @click="nextStep"
+          >
+            Skip
+          </v-btn>
           <v-btn flat @click="cancel">Cancel</v-btn>
         </v-stepper-content>
 
@@ -172,7 +178,8 @@
             Back
           </v-btn>
           <v-btn
-            color="primary"
+            light
+            color="yellow"
             @click="nextStep"
           >
             Skip
