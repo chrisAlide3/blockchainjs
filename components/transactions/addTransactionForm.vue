@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- HEADER -->
-    <v-layout row align-center>
+    <v-layout xs12 row wrap align-center>
       <!-- Sender -->
-      <v-flex xs11>
+      <v-flex xs12 md10>
         <div class="caption grey--text">Sender</div>
         <PublicKey :publicKey="senderAddress" />
       </v-flex>
