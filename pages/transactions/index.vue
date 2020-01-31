@@ -1,20 +1,21 @@
 <template>
   <div>
     <AddTransactionForm @addTransaction="addTransaction"/>
-    <div v-for="transaction in pendingTransactions" :key="transaction.id">
+    <TransactionsTable />
+    <!-- <div v-for="transaction in pendingTransactions" :key="transaction.id">
       <Transaction :transaction="transaction"></Transaction>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import AddTransactionForm from '../../components/transactions/addTransactionForm';
-import Transaction from '../../components/transactions/transaction';
+import TransactionsTable from '../../components/transactions/TransactionsTable';
 
 export default {
   components: {
     AddTransactionForm,
-    Transaction
+    TransactionsTable,
   },
 
   computed: {
