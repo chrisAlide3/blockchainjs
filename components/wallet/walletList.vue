@@ -58,6 +58,11 @@
           >
             Switch Active Wallet
           </v-btn>
+          <v-btn
+            @click="$router.go(-1)"
+          >
+            Back
+          </v-btn>
         </div>
       </v-flex>
     </v-layout>
