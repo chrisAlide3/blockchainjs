@@ -3,11 +3,11 @@
     <v-layout row wrap justify-center>
       <v-flex xs11 pr-4>
         <v-textarea
-          label="Public Key"
           readonly
           rows=1
           auto-grow
           outline
+          label="Wallet Address"
           :value="publicKey"
         ></v-textarea>
 
