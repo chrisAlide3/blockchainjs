@@ -7,7 +7,7 @@
            <h2 class="text-xs-center">Active Wallet</h2>
           </div>
           <v-card-text>
-           <WalletDetail :privateKeyObj="{privateKey: activePrivateKey, balance: balanceOfActiveWallet}"/>
+           <WalletDetail :privateKey="activePrivateKey"/>
           </v-card-text>
           <div>
             <v-btn @click="$router.push('/wallet')" color="primary">See all</v-btn>

@@ -12,7 +12,7 @@
         <!-- Active Wallet -->
         <v-card v-if="item === 'Active Wallet'">
           <v-card-text>
-            <WalletDetail :privateKeyObj="{privateKey: activePrivateKey, balance: activeBalance}" />
+            <WalletDetail :privateKey="activePrivateKey" />
           </v-card-text>
         </v-card>
 

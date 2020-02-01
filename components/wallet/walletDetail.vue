@@ -11,7 +11,7 @@
       </v-flex>
 
       <v-flex xs10>
-        <PrivateKey :privateKey="privateKeyObj.privateKey"/>
+        <PrivateKey :privateKey="privateKey"/>
       </v-flex>
       
       <v-flex xs1>
@@ -19,7 +19,7 @@
           label="Balance"
           readonly
           reverse
-          :value="privateKeyObj.balance"
+          :value="balance"
         >
         </v-text-field>
       </v-flex>
@@ -27,7 +27,7 @@
     
     <v-layout row wrap justify-center>
       <v-flex xs10>
-        <PublicKey :publicKey="getPublicKey(privateKeyObj.privateKey)" />
+        <PublicKey :publicKey="getPublicKey(privateKey)" />
       </v-flex>
     </v-layout>
   </v-container>
@@ -46,15 +46,26 @@ export default {
   },
 
   props: {
-    privateKeyObj: { // privateKey, balance
-      type: Object,
+    privateKey: {
+      type: String,
       required: true
     }
+  },
+
+  mounted () {
+    this.$axios.$get(this.$store.getters.currentNodeUrl + '/address/' + this.getPublicKey(this.privateKey))
+      .then(data => {
+        this.balance = data.balance;
+      })
+      .catch(err => {
+        console.log("Error in get balance: ", err);
+      })
   },
 
   data () {
     return {
       checkbox: false,
+      balance: 0,
     }
   },
 
@@ -62,7 +73,7 @@ export default {
     checkbox: function(val) {      
       const type = val === true ?'add' :'remove';
       const data = {
-        privateKey: this.privateKeyObj.privateKey,
+        privateKey: this.privateKey,
         type: type
       };
 

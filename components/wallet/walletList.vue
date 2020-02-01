@@ -10,7 +10,7 @@
       <v-layout row wrap>
         <v-flex xs12 pr-4>
           <WalletDetail
-            :privateKeyObj="{privateKey: activePrivateKey, balance: activeWalletBalance}"
+            :privateKey="activePrivateKey"
             @changeSelection="changeSelection"  
           />
         </v-flex>
@@ -21,13 +21,13 @@
       <h3 class="text-xs-center">Additional wallets</h3>
       <v-card-text
         class="text-xs-center"
-        v-for="(privateKey, index) in walletAddressesWithoutActiveAddress"
+        v-for="(privateKey) in walletAddressesWithoutActiveAddress"
         :key="privateKey"
       >
         <v-layout row wrap>
           <v-flex xs12 pr-4>
             <WalletDetail
-              :privateKeyObj="{privateKey: privateKey, balance: balanceOfAddresses[index]}"
+              :privateKey="privateKey"
               @changeSelection="changeSelection"  
             />
           </v-flex>
@@ -113,9 +113,9 @@ export default {
       return this.$store.getters.balance;
     },
 
-    balanceOfAddresses () {
-      return this.$store.getters.balanceOfAddresses;
-    }
+    // balanceOfAddresses () {
+    //   return this.$store.getters.balanceOfAddresses;
+    // }
   },
 
   methods: {
@@ -126,12 +126,12 @@ export default {
     deleteWallet () {
       this.selected.forEach(privateKey => {
         const index = this.walletAddresses.indexOf(privateKey);
-        const balance = this.balanceOfAddresses[index];
-        if (balance > 0) {
-          console.log("Wallet has balance! Show dialog");
-        }else {
+        // const balance = this.balanceOfAddresses[index];
+        // if (balance > 0) {
+          // console.log("Wallet has balance! Show dialog");
+        // }else {
           this.$emit("deleteWallet", {privateKey: privateKey});
-        }
+        // }
       })
       this.selected = [];
     },
