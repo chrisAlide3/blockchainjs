@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap>
+  <v-layout row wrap>
       <v-flex xs12 text-truncate pr-auto>
         <v-card>
           <v-card-title primary-title>
