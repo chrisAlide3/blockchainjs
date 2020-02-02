@@ -7,7 +7,6 @@ export const state = () => ({
   privateKey: '',
   currentNodeUrl: '',
   balance: 0,
-  balanceOfAddresses: [],
   error: '',
 })
 
@@ -59,16 +58,6 @@ export const mutations = {
   removeAddressFromWalletAddresses (state, index) {
     if (index >= 0) {
       state.walletAddresses.splice(index, 1);
-    }
-  },
-
-  writeBalanceOfAdresses (state, balance) {
-    state.balanceOfAddresses.push(balance);
-  },
-
-  removeBalanceFromBalanceOfAddresses (state, index) {
-    if (index >= 0) {
-      state.balanceOfAddresses.splice(index, 1);
     }
   },
 
@@ -140,8 +129,7 @@ export const actions = {
   async getBalancebyAddress ({ commit }, walletAddress) {
     try {
       // const address = this.getters.walletAddress;
-      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);
-      commit('writeBalanceOfAdresses', res.balance);
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);    
       if (walletAddress === this.getters.walletAddress) {
         commit('writeBalance', res.balance);  
       }
@@ -150,16 +138,16 @@ export const actions = {
     }  
   },
 
-  async getBalanceOfActiveWallet ({ commit }, walletAddress) {
-    try {
-      // const address = this.getters.walletAddress;
-      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);
-      commit('writeBalance', res.balance);  
-    } catch (error) {
-      console.log("Error getting balance: " + error);
-    }
+  // async getBalanceOfActiveWallet ({ commit }, walletAddress) {
+  //   try {
+  //     // const address = this.getters.walletAddress;
+  //     const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);
+  //     commit('writeBalance', res.balance);  
+  //   } catch (error) {
+  //     console.log("Error getting balance: " + error);
+  //   }
     
-  },
+  // },
 
   async mineBlock ({ commit, dispatch }) {
     try {
@@ -203,13 +191,13 @@ export const actions = {
     try {
       const res = await this.$axios.$post(this.getters.currentNodeUrl + '/delete-wallet', payload);
       const index = this.getters.walletAddresses.indexOf(payload.privateKey);
-      // Remove Address from walletAddresses and balance array
-      commit('removeBalanceFromBalanceOfAddresses', index);
       commit('removeAddressFromWalletAddresses', index);
       // Recalculate balance of active wallet if deleted wallet was the active one
       if (payload.privateKey === this.getters.privateKey) {
         console.log("Enter getBalanceOfActiveWallet");
-        dispatch('getBalanceOfActiveWallet', res.privateKey);
+        // dispatch('getBalanceOfActiveWallet', res.privateKey);
+        dispatch('getBalancebyAddress', res.privateKey);
+
       }
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
@@ -230,7 +218,11 @@ export const actions = {
       const res = await this.$axios.$post(this.getters.currentNodeUrl + '/switch-wallet', privateKey);
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
-      dispatch('getBalanceOfActiveWallet', res.walletAddress);
+      console.log("Balance of res switchWallet", res.balance);
+      
+      commit('writeBalance', res.balance);
+      // dispatch('getBalancebyAddress', res.walletAddress);
+      // dispatch('getBalanceOfActiveWallet', res.walletAddress);
     } catch (error) {
       
     }
@@ -289,10 +281,6 @@ export const getters = {
 
   balance (state) {
     return state.balance;
-  },
-
-  balanceOfAddresses (state) {
-    return state.balanceOfAddresses;
   },
 
   error (state) {

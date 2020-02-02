@@ -55,6 +55,7 @@ export default {
   mounted () {
     this.$axios.$get(this.$store.getters.currentNodeUrl + '/address/' + this.getPublicKey(this.privateKey))
       .then(data => {
+            console.log("Mounted " + this.privateKey + data.balance);
         this.balance = data.balance;
       })
       .catch(err => {

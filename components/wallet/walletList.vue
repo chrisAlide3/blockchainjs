@@ -1,5 +1,7 @@
 <template>
   <v-card class="mt-2">
+    <p>Active wallet address: {{ activeWalletAddress }}</p>
+    <p>Active private key: {{ activePrivateKey }}</p>
     <!-- Active wallet -->
     <v-layout row justify-center>
       <v-card-title>
@@ -21,7 +23,7 @@
       <h3 class="text-xs-center">Additional wallets</h3>
       <v-card-text
         class="text-xs-center"
-        v-for="(privateKey) in walletAddressesWithoutActiveAddress"
+        v-for="privateKey in walletAddressesWithoutActiveAddress"
         :key="privateKey"
       >
         <v-layout row wrap>
@@ -79,12 +81,12 @@ export default {
     WalletDetail,
   },
 
-  created () {
-    this.walletAddresses.forEach(privateKey => {
-      const publicKey = this.getPublicKey(privateKey);
-      this.$store.dispatch('getBalancebyAddress', publicKey)
-    })    
-  },
+  // created () {
+  //   this.walletAddresses.forEach(privateKey => {
+  //     const publicKey = this.getPublicKey(privateKey);
+  //     this.$store.dispatch('getBalancebyAddress', publicKey)
+  //   })    
+  // },
 
   data () {
     return {
@@ -112,10 +114,6 @@ export default {
     activeWalletBalance () {
       return this.$store.getters.balance;
     },
-
-    // balanceOfAddresses () {
-    //   return this.$store.getters.balanceOfAddresses;
-    // }
   },
 
   methods: {
@@ -126,12 +124,7 @@ export default {
     deleteWallet () {
       this.selected.forEach(privateKey => {
         const index = this.walletAddresses.indexOf(privateKey);
-        // const balance = this.balanceOfAddresses[index];
-        // if (balance > 0) {
-          // console.log("Wallet has balance! Show dialog");
-        // }else {
-          this.$emit("deleteWallet", {privateKey: privateKey});
-        // }
+        this.$emit("deleteWallet", {privateKey: privateKey});
       })
       this.selected = [];
     },

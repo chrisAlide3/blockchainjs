@@ -61,10 +61,12 @@ router.post('/delete-wallet', function (req, res) {
 router.post('/switch-wallet', function (req, res) {
   const privateKey = req.body.privateKey;
   bitcoin.setActiveWallet(privateKey);
+  const balance = bitcoin.getBalanceByAddress(bitcoin.walletAddress);
   res.json({
     note: 'Switched wallet successfully',
     privateKey: bitcoin.privateKey,
-    walletAddress: bitcoin.walletAddress
+    walletAddress: bitcoin.walletAddress,
+    balance: balance
   });
 })
 

@@ -46,6 +46,7 @@ export default {
   methods: {
     addTransaction (transaction) {
       console.log("Received addtransaction from emit");
+      transaction.amount = parseFloat(transaction.amount);
       this.$store.dispatch('addTransaction', transaction)
         .then(res => {
           console.log("Transaction dispatched successfully");
