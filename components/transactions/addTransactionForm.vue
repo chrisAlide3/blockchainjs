@@ -94,9 +94,7 @@
         return this.$store.getters.walletAddress
       },
 
-      balance () {
-        console.log("TypeOf Balance: ", typeof(this.$store.getters.balance));
-        
+      balance () {        
         return this.$store.getters.balance
       },
 
