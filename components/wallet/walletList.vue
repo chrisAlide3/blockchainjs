@@ -1,7 +1,5 @@
 <template>
   <v-card class="mt-2">
-    <p>Active wallet address: {{ activeWalletAddress }}</p>
-    <p>Active private key: {{ activePrivateKey }}</p>
     <!-- Active wallet -->
     <v-layout row justify-center>
       <v-card-title>
@@ -12,7 +10,7 @@
       <v-layout row wrap>
         <v-flex xs12 pr-4>
           <WalletDetail
-            :privateKey="activePrivateKey"
+            :private-key="activePrivateKey"
             @changeSelection="changeSelection"  
           />
         </v-flex>
@@ -29,7 +27,7 @@
         <v-layout row wrap>
           <v-flex xs12 pr-4>
             <WalletDetail
-              :privateKey="privateKey"
+              :private-key="privateKey"
               @changeSelection="changeSelection"  
             />
           </v-flex>

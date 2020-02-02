@@ -11,7 +11,7 @@
       </v-flex>
 
       <v-flex xs10>
-        <PrivateKey :privateKey="privateKey"/>
+        <private-key :private-key="privateKey"/>
       </v-flex>
       
       <v-flex xs1>
@@ -19,7 +19,7 @@
           label="Balance"
           readonly
           reverse
-          :value="balance"
+          :value="getBalance()"
         >
         </v-text-field>
       </v-flex>
@@ -27,7 +27,7 @@
     
     <v-layout row wrap justify-center>
       <v-flex xs10>
-        <PublicKey :publicKey="getPublicKey(privateKey)" />
+        <public-key :public-key="getPublicKey(privateKey)" />
       </v-flex>
     </v-layout>
   </v-container>
@@ -55,7 +55,6 @@ export default {
   mounted () {
     this.$axios.$get(this.$store.getters.currentNodeUrl + '/address/' + this.getPublicKey(this.privateKey))
       .then(data => {
-            console.log("Mounted " + this.privateKey + data.balance);
         this.balance = data.balance;
       })
       .catch(err => {
@@ -83,8 +82,12 @@ export default {
   },
 
   computed: {
-    activePrivateKey () {      
-      return this.$store.getters.privateKey
+    activePrivateKey () {
+      return this.$store.getters.privateKey;
+    },
+
+    activeBalance () {
+      return this.$store.getters.balance;
     },
   },
 
@@ -93,6 +96,16 @@ export default {
       const keys = ec.keyFromPrivate(privateKey);
       return keys.getPublic('hex');
     },
+
+    getBalance () {
+      let balance = 0;
+      if (this.privateKey === this.activePrivateKey) {
+        balance = this.activeBalance;
+      }else {
+        balance = this.balance;
+      }
+      return balance;
+    }
 
   }
 }

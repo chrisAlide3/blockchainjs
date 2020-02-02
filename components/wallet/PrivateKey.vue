@@ -11,6 +11,11 @@
           @click:append="show1 = !show1"
         >
         </v-text-field>
+        <!-- <v-text-field 
+          readonly
+          label="Private Key" 
+          :value="privateKey">
+        </v-text-field> -->
         <!-- Tooltip for Copy message -->
         <v-layout justify-end>
           <v-flex xs1>
@@ -87,6 +92,10 @@ export default {
       type: String,
       required: true
     },
+  },
+
+  updated () {
+    this.password = this.privateKey;
   },
 
   data () {

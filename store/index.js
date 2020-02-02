@@ -218,11 +218,7 @@ export const actions = {
       const res = await this.$axios.$post(this.getters.currentNodeUrl + '/switch-wallet', privateKey);
       commit('setPrivateKey', res.privateKey);
       commit('setWalletAddress', res.walletAddress);
-      console.log("Balance of res switchWallet", res.balance);
-      
       commit('writeBalance', res.balance);
-      // dispatch('getBalancebyAddress', res.walletAddress);
-      // dispatch('getBalanceOfActiveWallet', res.walletAddress);
     } catch (error) {
       
     }
