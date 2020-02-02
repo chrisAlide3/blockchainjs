@@ -46,12 +46,23 @@ router.get('/create-wallet', function (req, res) {
 
 router.post('/delete-wallet', function (req, res) {
   const privateKey = req.body.privateKey;
+  let recalculateActiveBalance = false;
+  let recalculatedBalance = 0;
+  // Recalculate activeBalance of new activePrivateKey when deleted privateKey was the active one
+  if (privateKey === bitcoin.privateKey) {
+    recalculateActiveBalance = true;
+  }
   try {
-    bitcoin.deleteWallet(privateKey);
+    bitcoin.deleteWallet(privateKey)
+    // Recalculate activeBalance of new activePrivateKey when deleted privateKey was the active one
+    if (recalculateActiveBalance) {
+      recalculatedBalance = bitcoin.getBalanceByAddress(bitcoin.walletAddress)
+    }
     res.json({
       note: 'Wallet deleted successfully',
       privateKey: bitcoin.privateKey,
       walletAddress: bitcoin.walletAddress,
+      balance: recalculatedBalance,
     })
   } catch (error) {
     res.status(500).send('Error deleting wallet')

@@ -11,7 +11,7 @@
       </v-flex>
 
       <v-flex xs10>
-        <private-key :private-key="privateKey"/>
+        <private-key :private-key="privateKey" :balance="getBalance()"/>
       </v-flex>
       
       <v-flex xs1>

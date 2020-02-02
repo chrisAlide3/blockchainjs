@@ -11,11 +11,6 @@
           @click:append="show1 = !show1"
         >
         </v-text-field>
-        <!-- <v-text-field 
-          readonly
-          label="Private Key" 
-          :value="privateKey">
-        </v-text-field> -->
         <!-- Tooltip for Copy message -->
         <v-layout justify-end>
           <v-flex xs1>
@@ -33,6 +28,7 @@
       <v-flex xs1 pt-4>
         <v-icon small @click="copyPrivateKey">mdi-content-copy</v-icon>
         <v-icon small @click="qrcodeDialog = true">mdi-barcode</v-icon>
+        <v-icon small @click="deleteWallet">mdi-delete</v-icon>
       </v-flex>
     </v-layout>
 
@@ -92,6 +88,10 @@ export default {
       type: String,
       required: true
     },
+    balance: {
+      type: Number,
+      required: true
+    }
   },
 
   updated () {
@@ -122,6 +122,20 @@ export default {
 
     printQrcode () {
       window.print();
+    },
+
+    deleteWallet () {
+      if (this.balance > 0) {
+        console.log("Wallet has balance. Don't delete. PrivateKey=" + this.privateKey + " Balance=" + this.balance);
+      } else {
+        try {
+          this.$store.dispatch("deleteWallet", {privateKey: this.privateKey});
+          console.log("PrivateKey in deleteWallet: ", this.privateKey);
+          
+        } catch (error) {
+          console.log("Error in dispatch deleteWallet: " + error);
+        }
+      }
     }
   }
 }

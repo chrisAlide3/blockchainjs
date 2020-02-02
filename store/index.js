@@ -67,7 +67,6 @@ export const mutations = {
 
   setError (state, message) {
     state.error = message;
-    console.log("Error in state: " + state.error);
   }
 }
 
@@ -192,11 +191,11 @@ export const actions = {
       const res = await this.$axios.$post(this.getters.currentNodeUrl + '/delete-wallet', payload);
       const index = this.getters.walletAddresses.indexOf(payload.privateKey);
       commit('removeAddressFromWalletAddresses', index);
-      // Recalculate balance of active wallet if deleted wallet was the active one
+      // Set balance of active wallet if deleted wallet was the active one
       if (payload.privateKey === this.getters.privateKey) {
         console.log("Enter getBalanceOfActiveWallet");
         // dispatch('getBalanceOfActiveWallet', res.privateKey);
-        dispatch('getBalancebyAddress', res.privateKey);
+        commit('writeBalance', res.balance);
 
       }
       commit('setPrivateKey', res.privateKey);

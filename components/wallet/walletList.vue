@@ -79,13 +79,6 @@ export default {
     WalletDetail,
   },
 
-  // created () {
-  //   this.walletAddresses.forEach(privateKey => {
-  //     const publicKey = this.getPublicKey(privateKey);
-  //     this.$store.dispatch('getBalancebyAddress', publicKey)
-  //   })    
-  // },
-
   data () {
     return {
       selected: [],
