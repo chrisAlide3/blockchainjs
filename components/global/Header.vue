@@ -147,7 +147,8 @@
           { title: 'Register', icon: 'mdi-account-plus', route: '/register', subItems: []},
           { title: 'Wallets', icon: 'mdi-wallet', route: '/wallet', subItems: []},
           { title: 'Blockchain', icon: 'mdi-link-lock', route: '', subItems: [
-            { title: 'Blockchain', icon: 'mdi-link-lock', route: '/blockchain'},
+            { title: 'Whole Blockchain', icon: 'mdi-link-lock', route: '/blockchain'},
+            { title: 'Chain', icon: 'mdi-link-lock', route: '/chain'},
             { title: 'Cockpit', icon: 'mdi-view-dashboard', route: '/cockpit'},
             { title: 'Mine Block', icon: 'mdi-link-lock', route: '/mine'}
           ]
