@@ -105,6 +105,7 @@ router.post('/transaction/broadcast', function(req, res) {
   // NetworkNodes available
   if (req.body.amount <= balance || req.body.sender === '00') {
     const newTransaction = bitcoin.createTransaction(req.body.amount, req.body.sender, req.body.recipient);
+    newTransaction.signature = bitcoin.signTransaction(newTransaction, bitcoin.privateKey);    
     bitcoin.addTransactionToPendingTransaction(newTransaction);
     // Broadcast transaction if Networknodes available
     if (bitcoin.networkNodes.length > 0) {

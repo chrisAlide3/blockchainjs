@@ -180,7 +180,8 @@ Blockchain.prototype.hashTransaction = function(amount, sender, recipient) {
   return shajs('sha256').update(amount + sender + recipient).digest('hex');
 }
 
-Blockchain.prototype.signTransaction = function(transaction, signingKey) {
+Blockchain.prototype.signTransaction = function(transaction, privateKey) {
+  const signingKey = ec.keyFromPrivate(privateKey);
   // Don't sign mining reward
   if (transaction.sender === '00') {
     return null;
@@ -208,6 +209,12 @@ Blockchain.prototype.transactionIsValid = function(transaction) {
 }
 
 Blockchain.prototype.addTransactionToPendingTransaction = function(transactionObj) {
+  if (!transactionObj.sender || !transactionObj.recipient) {
+    throw new Error('Transaction must include sender and recipient Address!');
+  }
+  if (!this.transactionIsValid(transactionObj)) {
+    throw new Error('Cannot add invalid transaction to the chain!')
+  }
   this.pendingTransactions.push(transactionObj);
   this.writeBlockchainFile(this.chain, this.pendingTransactions, this.networkNodes);
 
