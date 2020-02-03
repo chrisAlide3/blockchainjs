@@ -4,13 +4,22 @@
         <v-card>
           <v-card-title primary-title>
             <h3 class="headline mb-0 orange--text">ID: {{ block.index }}</h3>
-            <v-card-text>              
-              <p>Nonce {{ block.nonce }}</p>
-              <p>Hash: {{ block.hash }}</p>
-              <p>Previous Hash: {{ block.previousHash }}</p>
-              <p>Created: {{ block.timestamp }}</p>
-              <!-- <h3 v-if="block.transactions.length > 0">Transactions</h3>
-              <h3 v-else>No Transactions in this block</h3> -->
+            <v-card-text>
+              <div class="caption">Nonce</div>
+              <p class="grey--text text--lighten-2">{{block.nonce}}</p>
+              <v-divider class="mb-2"></v-divider>
+
+              <div class="caption">Hash</div>
+              <p class="grey--text text--lighten-2">{{block.hash}}</p>
+
+              <div class="caption">Previous Hash</div>
+              <p class="grey--text text--lighten-2">{{block.previousHash}}</p>
+              <v-divider class="mb-2"></v-divider>
+
+
+              <div class="caption">Created</div>
+              <p class="grey--text text--lighten-2">{{convertTimestampToDate()}}</p>
+
               <v-expansion-panel>
                 <v-expansion-panel-content
                   v-for="transaction in block.transactions" 
@@ -26,17 +35,8 @@
                   </v-card>
                 </v-expansion-panel-content>
               </v-expansion-panel>
-
-              <!-- <div v-for="transaction in block.transactions" :key="transaction.transactionId">
-                <Transaction :transaction="transaction"/>
-              </div> -->
             </v-card-text>
           </v-card-title>
-
-          <v-card-actions>
-            <!-- <v-btn flat color="orange">Copy sender to clipboard</v-btn>
-            <v-btn flat color="orange">Copy recipient to clipboard</v-btn> -->
-          </v-card-actions>
         </v-card>
         <br>
       </v-flex>
@@ -51,7 +51,14 @@ export default {
     Transaction
   },
 
-  props: ['block']
+  props: ['block'],
+
+  methods: {
+    convertTimestampToDate () {
+      let date = new Date(this.block.timestamp);
+      return date;
+    }
+  }
 }
 </script>
 
