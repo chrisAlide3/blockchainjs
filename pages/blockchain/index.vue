@@ -35,7 +35,7 @@
             v-for="block in chain"
             :key="block.id"
             >
-              <block :block="block"></block>
+              <block :block="block" :show-transactions="true"></block>
             </v-card-text>
           </div>
           <!-- Chain descending -->
@@ -44,7 +44,7 @@
             v-for="block in chainReversed"
             :key="block.id"
             >
-              <block :block="block"></block>
+              <block :block="block" :show-transactions="true"></block>
             </v-card-text>
           </div>  
         </v-card>

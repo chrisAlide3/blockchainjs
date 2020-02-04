@@ -3,7 +3,7 @@
     <v-layout row wrap xs12 md10 justify-center>
       <div v-if="isMined">
         <h3 class="text-xs-center mb-3">Mined Block</h3>
-        <Block :block="lastBlock" />
+        <Block :block="lastBlock" :show-transactions="true" />
       </div>
     </v-layout>
 

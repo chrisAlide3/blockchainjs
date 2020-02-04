@@ -6,7 +6,7 @@
         :key="block.id"
         xs4
       >
-        <block-without-transactions :block="block" />
+        <Block :block="block" :show-transactions="false" />
         <!-- <v-card flat tile>
           <v-img
             :src="`https://unsplash.it/150/300?image=${Math.floor(Math.random() * 100) + 1}`"
@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import BlockWithoutTransactions from './BlockWithoutTransactions'
+import Block from './block'
 
 export default {
   components: {
-    BlockWithoutTransactions,
+    Block,
   },
 
   computed: {
