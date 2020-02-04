@@ -51,9 +51,9 @@ export default {
   },
 
   methods: {
-    mineBlock () {
+    async mineBlock () {
       try {
-        this.$store.dispatch('mineBlock');
+        await this.$store.dispatch('mineBlock');
         this.isMined = true;
       } catch (error) {
         console.log("Error mining block");

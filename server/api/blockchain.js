@@ -200,11 +200,15 @@ Blockchain.prototype.transactionIsValid = function(transaction) {
   if (transaction.sender === '00') return true;
 
   if (!transaction.signature || transaction.signature.length === 0) {
-    throw new Error('Transaction is not signed')
+    console.log("Transaction signature missing");
+    
+    return false;
+    //throw new Error('Transaction is not signed')
   }
 
   const publicKey = ec.keyFromPublic(transaction.sender, 'hex');
   return publicKey.verify(this.hashTransaction(transaction.amount, transaction.sender, transaction.recipient), transaction.signature);
+  // return publicKey.verify(this.hashTransaction(transaction), transaction.signature);
 
 }
 
@@ -249,15 +253,14 @@ Blockchain.prototype.blockHasValidTransactions = function(block) {
 }
 
 Blockchain.prototype.chainIsValid = function(chain) {
-  let isValid = true;
   for (let i = 1; i < chain.length; i++) {
     const currentBlock = chain[i];
     const previousBlock = chain[i -1];
 
     // Check if previousHash equals hash of previous block
     if (previousBlock.hash !== currentBlock.previousHash && (previousBlock.index + 1) == currentBlock.index) {
-      isValid = false;
-      break;
+      console.log("hashes don't match")
+      return false;
     }
 
     // Check if current block hash is valid by rehashing it
@@ -268,23 +271,29 @@ Blockchain.prototype.chainIsValid = function(chain) {
     const calculatedHash = this.hashBlock(previousBlock.hash, currentBlockData, currentBlock.nonce);
 
     if (currentBlock.hash !== calculatedHash || calculatedHash.substring(0, 4) !== '0000') {
-      isValid = false;
-      break;
+      console.log("Current block hash is invalid");
+      return false;
     }
 
     // Check if transactions in block are valid
-    if (!this.blockHasValidTransactions(currentBlock)) {
-      isValid = false;
-      break;
+    if (currentBlock.transactions.length > 0) {
+      if (!this.blockHasValidTransactions(currentBlock)) {
+        console.log("Invalid transactions in block");
+        return false;
+      }
     }
+    
+
   }
 
   // Check genesis block
   const genesisBlock = chain[0];
   if (genesisBlock.nonce !== 100 || genesisBlock.previousHash !== '0' || genesisBlock.hash !== '0' || genesisBlock.transactions.length > 0) {
-    isValid = false;
+    console.log("Genesis block invalid");
+    return false;
   }
-  return isValid;
+
+  return true;
 }
 
 Blockchain.prototype.getBlock = function(hash) {

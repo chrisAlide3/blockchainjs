@@ -105,6 +105,7 @@ router.post('/transaction/broadcast', function(req, res) {
   // NetworkNodes available
   if (req.body.amount <= balance || req.body.sender === '00') {
     const newTransaction = bitcoin.createTransaction(req.body.amount, req.body.sender, req.body.recipient);
+    console.log("Transaction to be signed: ", newTransaction)
     newTransaction.signature = bitcoin.signTransaction(newTransaction, bitcoin.privateKey);    
     bitcoin.addTransactionToPendingTransaction(newTransaction);
     // Broadcast transaction if Networknodes available
@@ -376,6 +377,14 @@ router.get('/consensus', function(req, res) {
       })
       .catch(err => console.log(err));
   })
+})
+
+router.get('/chain-valid', function(req, res) {
+  const isChainValid = bitcoin.chainIsValid(bitcoin.chain);
+  
+  res.json({
+    isChainValid: isChainValid,
+  });
 })
 
 router.get('/block/:blockHash', function(req, res) {
