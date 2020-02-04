@@ -260,7 +260,11 @@ Blockchain.prototype.chainIsValid = function(chain) {
     // Check if previousHash equals hash of previous block
     if (previousBlock.hash !== currentBlock.previousHash && (previousBlock.index + 1) == currentBlock.index) {
       console.log("hashes don't match")
-      return false;
+      return {
+        message: 'Hashes don\'t match',
+        isChainValid: false,
+        invalidBlockIndex: currentBlock.index,
+      }
     }
 
     // Check if current block hash is valid by rehashing it
@@ -272,28 +276,42 @@ Blockchain.prototype.chainIsValid = function(chain) {
 
     if (currentBlock.hash !== calculatedHash || calculatedHash.substring(0, 4) !== '0000') {
       console.log("Current block hash is invalid");
-      return false;
+      return {
+        message: 'Current block hash is invalid',
+        isChainValid: false,
+        invalidBlockIndex: currentBlock.index,
+      }
     }
 
     // Check if transactions in block are valid
     if (currentBlock.transactions.length > 0) {
       if (!this.blockHasValidTransactions(currentBlock)) {
         console.log("Invalid transactions in block");
-        return false;
+        return {
+          message: 'Invalid transactions in block',
+          isChainValid: false,
+          invalidBlockIndex: currentBlock.index,
+        }
       }
     }
-    
-
   }
 
   // Check genesis block
   const genesisBlock = chain[0];
   if (genesisBlock.nonce !== 100 || genesisBlock.previousHash !== '0' || genesisBlock.hash !== '0' || genesisBlock.transactions.length > 0) {
     console.log("Genesis block invalid");
-    return false;
+    return {
+      message: 'Genesis block invalid',
+      isChainValid: false,
+      invalidBlockIndex: genesisBlock.index,
+    }
   }
 
-  return true;
+  return {
+    message: 'Your actual blockchain is valid',
+    isChainValid: true,
+    invalidBlockIndex: '',
+  }
 }
 
 Blockchain.prototype.getBlock = function(hash) {

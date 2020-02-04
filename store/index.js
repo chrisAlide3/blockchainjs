@@ -1,6 +1,7 @@
 export const state = () => ({
   chain: [],
   isChainValid: true,
+  invalidBlockIndex: '',
   pendingTransactions: [],
   networkNodes: [],
   walletAddress: '',
@@ -24,6 +25,10 @@ export const mutations = {
 
   setChainValidity (state, isValid) {
     state.isChainValid = isValid;    
+  },
+
+  setInvalidBlockIndex (state, index) {
+    state.invalidBlockIndex = index;
   },
 
   addTransactionToPendingTransactions (state, transaction) {
@@ -178,12 +183,12 @@ export const actions = {
     
   },
 
-  async checkChainValidity ({ commit }) {
-    console.log("Path to call in action: ", this.getters.currentNodeUrl + '/chain-valid');
-    
+  async checkChainValidity ({ commit }) {    
     try {
       const res = await this.$axios.$get(this.getters.currentNodeUrl + '/chain-valid');
+      console.log('Res from chain valid in actions: ', res);
       commit("setChainValidity", res.isChainValid);
+      commit("setInvalidBlockIndex", res.invalidBlockIndex);
     } catch (error) {
       commit('setChainValidity', false);
       console.log("Error in /chain-valid");
@@ -267,6 +272,10 @@ export const getters = {
 
   isChainValid (state) {
     return state.isChainValid;
+  },
+
+  invalidBlockIndex (state) {
+    return state.invalidBlockIndex;
   },
 
   pendingTransactions (state) {

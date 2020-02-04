@@ -1,7 +1,8 @@
 <template>
   <v-layout row wrap>
       <v-flex xs12 text-truncate pr-auto>
-        <v-card>
+        <p>Is valid block: {{ invalidBlockIndex }}</p>
+        <v-card :style="invalidBlockIndex === block.index ?{border: 'solid red 2px'} : {}">
           <v-card-title primary-title>
             <h3 class="headline mb-0 orange--text">ID: {{ block.index }}</h3>
             <v-card-text>
@@ -60,7 +61,31 @@ export default {
     Transaction
   },
 
-  props: ['block', 'showTransactions'],
+  props: {
+    block: {
+      type: Object,
+      required: true,
+    },
+
+    showTransactions: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+
+    // isValid: {
+    //   type: Boolean,
+    //   required: false,
+    //   default: true,
+    // }
+
+  },
+
+  computed: {
+    invalidBlockIndex () {
+      return this.$store.getters.invalidBlockIndex;
+    }
+  },
 
   methods: {
     convertTimestampToDate () {

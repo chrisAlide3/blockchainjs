@@ -1,5 +1,6 @@
 <template>
   <v-container grid-list-md>
+    <p>Invalid block: {{ invalidBlockIndex }}</p>
     <v-alert
       outline
       dismissible
@@ -47,7 +48,11 @@ export default {
 
     isChainValid () {
       return this.$store.getters.isChainValid;
-    }
+    },
+
+    invalidBlockIndex () {
+      return this.$store.getters.invalidBlockIndex;
+    },
   }
 }
 </script>

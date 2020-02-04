@@ -380,10 +380,12 @@ router.get('/consensus', function(req, res) {
 })
 
 router.get('/chain-valid', function(req, res) {
-  const isChainValid = bitcoin.chainIsValid(bitcoin.chain);
+  const validityObj = bitcoin.chainIsValid(bitcoin.chain);
   
   res.json({
-    isChainValid: isChainValid,
+    message: validityObj.message,
+    isChainValid: validityObj.isChainValid,
+    invalidBlockIndex: validityObj.invalidBlockIndex,
   });
 })
 
