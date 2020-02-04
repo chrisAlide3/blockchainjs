@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md>
+  <v-container class="mt-0 pt-0" grid-list-md>
     <v-alert
       outline
       dismissible
@@ -14,6 +14,7 @@
       type="error"
     >
       Your actual blockchain is invalid
+      <v-btn @click="$router.push('/invalidBlock')" small outline class="pt-1" color="error">Show invalid Block</v-btn>
     </v-alert>
 
     <v-layout row wrap>

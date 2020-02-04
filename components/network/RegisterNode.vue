@@ -1,13 +1,9 @@
 <template>
   <v-card>
-    <!-- <v-img
-      :src="require('../../assets/images/networkNodes.png')" aspect-ratio="4"
-    ></v-img> -->
-
     <v-container>
       <v-layout justify-center>
         <v-flex xs12 md8>
-          <h3 class="text-xs-center mt-2">Network Nodes</h3>
+          <!-- <h3 class="text-xs-center mt-2">Network Nodes</h3> -->
           <v-card-title>
             Register your node to the network
           </v-card-title>
