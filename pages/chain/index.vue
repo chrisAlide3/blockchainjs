@@ -1,6 +1,5 @@
 <template>
   <v-container grid-list-md>
-    <p>Invalid block: {{ invalidBlockIndex }}</p>
     <v-alert
       outline
       dismissible
