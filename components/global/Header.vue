@@ -150,7 +150,8 @@
             { title: 'Whole Blockchain', icon: 'mdi-link-lock', route: '/blockchain'},
             { title: 'Chain', icon: 'mdi-link-lock', route: '/chain'},
             { title: 'Cockpit', icon: 'mdi-view-dashboard', route: '/cockpit'},
-            { title: 'Mine Block', icon: 'mdi-link-lock', route: '/mine'}
+            { title: 'Mine Block', icon: 'mdi-link-lock', route: '/mine'},
+            { title: 'Network', icon: 'mdi-wan', route: '/network'}
           ]
           },
           { title: 'Transactions', icon: 'mdi-swap-horizontal', route: '', subItems: [
