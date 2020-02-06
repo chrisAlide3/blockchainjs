@@ -88,6 +88,13 @@ export const actions = {
     } catch (error) {
       console.log('Error dispatch loadBlockchain: ' + error);
     }
+
+    try {
+      await dispatch('checkChainValidity');
+    } catch (error) {
+      console.log("Error dispatch checkChainValidity");
+    }
+
     if (this.getters.walletAddress !== '') {
       try {
         await dispatch('getBalancebyAddress', this.getters.walletAddress);
@@ -186,7 +193,6 @@ export const actions = {
   async checkChainValidity ({ commit }) {    
     try {
       const res = await this.$axios.$get(this.getters.currentNodeUrl + '/chain-valid');
-      console.log('Res from chain valid in actions: ', res);
       commit("setChainValidity", res.isChainValid);
       commit("setInvalidBlockIndex", res.invalidBlockIndex);
     } catch (error) {

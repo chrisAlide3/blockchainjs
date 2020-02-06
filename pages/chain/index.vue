@@ -37,10 +37,6 @@ export default {
     Block,
   },
 
-  mounted () {
-    this.$store.dispatch('checkChainValidity');
-  },
-
   computed: {
     chain () {
       return this.$store.getters.chain;
