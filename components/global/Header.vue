@@ -153,7 +153,10 @@
             { title: 'Mine Block', icon: 'mdi-link-lock', route: '/mine'}
           ]
           },
-          { title: 'Transactions', icon: 'mdi-database-import', route: '/transactions', subItems: []},
+          { title: 'Transactions', icon: 'mdi-swap-horizontal', route: '', subItems: [
+            { title: 'Pending Transactions', icon: 'mdi-database-import', route: '/transactions'},
+            { title: 'Add Transaction', icon: 'mdi-database-plus', route: '/transactions/add-transaction'}
+          ]},
         ],
       }
     }
