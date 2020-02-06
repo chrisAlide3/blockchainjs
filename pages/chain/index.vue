@@ -14,7 +14,7 @@
       type="error"
     >
       Your actual blockchain is invalid
-      <v-btn @click="$router.push('/invalidBlock')" small outline class="pt-1" color="error">Show invalid Block</v-btn>
+      <v-btn @click="$router.push('/chain/invalid-block')" small outline class="pt-1" color="error">Show invalid Block</v-btn>
     </v-alert>
 
     <v-layout row wrap>

@@ -55,9 +55,9 @@
 </template>
 
 <script>
-import Block from '../../components/blockchain/block'
-import RegisterNode from '../../components/network/RegisterNode'
-import NetworkNodesList from '../../components/network/NetworkNodesList'
+import Block from '../../../components/blockchain/block'
+import RegisterNode from '../../../components/network/RegisterNode'
+import NetworkNodesList from '../../../components/network/NetworkNodesList'
 
 export default {
   components: {
