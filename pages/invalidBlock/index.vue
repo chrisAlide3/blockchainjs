@@ -4,7 +4,7 @@
       <h3 class="orange--text mb-3">Invalid Block</h3>
       <Block :block="invalidBlock" />
       <div>
-        <v-btn @click="getChain()" light color="orange">Download Valid Chain from Network</v-btn>
+        <v-btn @click="checkIfChainCanBeDownloaded()" light color="orange">Download Valid Chain from Network</v-btn>
       </div>
     </v-layout>
 
@@ -25,13 +25,21 @@
           </v-card-title>
 
           <v-card-text>
-            <register-node />
+            <register-node v-if="!nodeRegistered" @registerNodeToNetwork="registerNodeToNetwork" />
+            <network-nodes-list v-else />
           </v-card-text>
 
           <v-divider></v-divider>
 
           <v-card-actions>
             <v-spacer></v-spacer>
+            <v-btn v-if="nodeRegistered"
+              color="orange"
+              flat
+              @click="hasRegisteredToNetwork()"
+            >
+              Download
+            </v-btn>
             <v-btn
               color="primary"
               flat
@@ -49,11 +57,13 @@
 <script>
 import Block from '../../components/blockchain/block'
 import RegisterNode from '../../components/network/RegisterNode'
+import NetworkNodesList from '../../components/network/NetworkNodesList'
 
 export default {
   components: {
     Block,
     RegisterNode,
+    NetworkNodesList,
   },
 
   data () {
@@ -71,25 +81,45 @@ export default {
       return this.$store.getters.chain[this.invalidBlockIndex - 1];
     },
 
-    networkNodes () {
-      return this.$store.getters.networkNodes;
-    }
+    nodeRegistered () {
+      if (this.$store.getters.networkNodes.length > 0) {
+        return true;
+      }else {
+        return false;
+      }
+    },
   },
 
   methods: {
-    async getChain () {
-      console.log("Get chain clicked");
-      if (this.networkNodes.length === 0) {
+    checkIfChainCanBeDownloaded () {
+      if (!this.nodeRegistered) {
         this.showRegisterToNetworkDialog = true;
       }else {
-        try {
-        
-        } catch (error) {
-          
-        }
-      
-      }      
+        this.getChain();  
+      }
+    },     
+
+    hasRegisteredToNetwork () {
+      this.showRegisterToNetworkDialog = false;
+      this.getChain();
     },
+
+    async registerNodeToNetwork (networkNode) {
+      try {
+        this.$store.dispatch('registerNodeToNetwork', networkNode);
+      } catch (error) {
+        console.log("Error in dispatch register node: " + error);
+      }
+    },
+
+    async getChain () {
+      try {
+        console.log("get chain");
+        
+      } catch (error) {
+        console.log("Error getting chain");
+      }
+    }
   }
 }
 </script>
