@@ -83,7 +83,9 @@ export default {
     addTransaction (transaction) {
       this.$store.dispatch('addTransaction', transaction);
     }
-  }
+  },
+
+  middleware: ['hasWallet']
   
 }
 </script>

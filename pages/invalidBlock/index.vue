@@ -120,6 +120,8 @@ export default {
         console.log("Error getting chain");
       }
     }
-  }
+  },
+
+  middleware: ['invalidChain']
 }
 </script>

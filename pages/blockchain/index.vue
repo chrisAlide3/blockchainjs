@@ -185,6 +185,8 @@ export default {
     mineBlock () {
       this.$store.dispatch('mineBlock');
     },
-  }
+  },
+
+  middleware: ['hasWallet']
 }
 </script>

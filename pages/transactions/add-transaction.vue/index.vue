@@ -57,6 +57,6 @@ export default {
     }
   },
 
-  middleware: ['invalidChain']
+  middleware: [ 'hasWallet', 'invalidChain']
 }
 </script>

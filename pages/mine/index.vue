@@ -61,7 +61,9 @@ export default {
       }
             
     }
-  }
+  },
+
+  middleware: [ 'hasWallet', 'invalidChain']
   
 }
 </script>
