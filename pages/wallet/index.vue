@@ -15,16 +15,18 @@ export default {
   },
 
   methods: {
-    createWallet () {        
-        try {
-          this.$store.dispatch("createWallet");
-          console.log("Wallet created");
-          
-        } catch (error) {
-          console.log("Error creating wallet");
-          
-        }
-      },
+    async createWallet () {
+      this.$store.dispatch('setLoading', ['generateWallet'])      
+      try {
+        await this.$store.dispatch("createWallet");
+        this.$store.dispatch('setLoading', [])
+        console.log("Wallet created");
+        
+      } catch (error) {
+        console.log("Error creating wallet");
+        this.$store.dispatch('setLoading', []);
+      }
+    },
 
       deleteWallet (privateKey) {
         console.log("PrivateKey in emmit delete: " + privateKey);

@@ -19,7 +19,7 @@
         <!-- Wallet -->
         <v-card v-if="item === 'Wallets'">
           <v-card-text>
-            <WalletList />
+            <WalletList @createWallet="createWallet"/>
           </v-card-text>
         </v-card>
 
@@ -185,6 +185,20 @@ export default {
     mineBlock () {
       this.$store.dispatch('mineBlock');
     },
+
+    async createWallet () {
+      this.$store.dispatch('setLoading', ['generateWallet'])      
+      try {
+        await this.$store.dispatch("createWallet");
+        this.$store.dispatch('setLoading', [])
+        console.log("Wallet created");
+        
+      } catch (error) {
+        console.log("Error creating wallet");
+        this.$store.dispatch('setLoading', []);
+      }
+    },
+
   },
 
   middleware: ['hasWallet']

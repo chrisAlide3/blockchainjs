@@ -9,7 +9,14 @@
 
     <v-layout row justify-center mb-3>
       <v-flex xs12 md7>
-       <v-btn block @click="mineBlock" color="success">Mine Block</v-btn>
+       <v-btn
+        :loading="loading.includes('mine')"
+        block
+        @click="mineBlock" 
+        color="success"
+      >
+        Mine Block
+        </v-btn>
       </v-flex>
     </v-layout>
 
@@ -40,6 +47,7 @@ export default {
   data () {
     return {
       isMined: false,
+      loading: [],
     }
   },
 
@@ -48,16 +56,19 @@ export default {
       const lastBlockIndex = this.$store.getters.chain.length - 1;
       return this.$store.getters.chain[lastBlockIndex]
     },
+
   },
 
   methods: {
     async mineBlock () {
+      this.loading.push('mine');
       try {
         await this.$store.dispatch('mineBlock');
         this.isMined = true;
+        this.loading = [];
       } catch (error) {
         console.log("Error mining block");
-        
+        this.loading = [];
       }
             
     }

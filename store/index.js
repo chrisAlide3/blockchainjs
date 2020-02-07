@@ -10,6 +10,7 @@ export const state = () => ({
   currentNodeUrl: '',
   balance: 0,
   error: '',
+  loading: [],
 })
 
 export const mutations = {
@@ -77,6 +78,10 @@ export const mutations = {
 
   setError (state, message) {
     state.error = message;
+  },
+
+  setLoading (state, value) {
+    state.loading = value;
   }
 }
 
@@ -268,7 +273,11 @@ export const actions = {
     } catch (error) {
       console.log("Error in getNetworkNodes action: " + error);
     }
-  }
+  },
+
+  setLoading ({ commit }, value) {
+    commit('setLoading', value);
+  } 
 }
 
 export const getters = {
@@ -315,5 +324,9 @@ export const getters = {
   error (state) {
     return state.error;
   },
+
+  loading (state) {
+    return state.loading;
+  }
 
 }

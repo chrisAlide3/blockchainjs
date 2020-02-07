@@ -280,14 +280,16 @@
         }
       },
 
-      createWallet () {        
+       async createWallet () {
+        this.$store.dispatch('setLoading', ['generateWallet'])        
         try {
-          this.$store.dispatch("createWallet");
+          await this.$store.dispatch("createWallet");
+          this.$store.dispatch('setLoading', [])        
           console.log("Wallet created");
           
         } catch (error) {
           console.log("Error creating wallet");
-          
+          this.$store.dispatch('setLoading', [])
         }
       },
 

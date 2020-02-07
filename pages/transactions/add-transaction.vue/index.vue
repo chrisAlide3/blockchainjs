@@ -30,30 +30,20 @@ export default {
     senderAddress () {
       return this.$store.getters.walletAddress;
     }
-
-    // balance () {
-    //     this.$axios.$get('/api/address/' + this.senderAddress)
-    //       .then(data => {
-    //         console.log("Response from get balance: " + data.balance);
-    //         return {balance: data.balance};
-    //       })
-    //       .catch(err => {
-    //         return {balance: 0};
-    //       })
-    //   }
   },
 
   methods: {
-    addTransaction (transaction) {
-      console.log("Received addtransaction from emit");
+    async addTransaction (transaction) {
       transaction.amount = parseFloat(transaction.amount);
-      this.$store.dispatch('addTransaction', transaction)
-        .then(res => {
-          console.log("Transaction dispatched successfully");
-        })
-        .catch(err => {
-          console.log("Error in dispatch transaction: " + err);
-        })
+      this.$store.dispatch('setLoading', ['addTransaction']);
+      try {
+        await this.$store.dispatch('addTransaction', transaction);
+        this.$store.dispatch('setLoading', []);
+ 
+      } catch (error) {
+        this.$store.dispatch('setLoading', []);
+        console.log("Error in dispatch transaction: " + err);
+      }
     }
   },
 

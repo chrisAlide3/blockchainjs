@@ -44,6 +44,7 @@
 
         <v-flex xs1>
           <v-btn
+            :loading="loading.includes('addTransaction')"
             color="success"
             @click="addTransaction"
             :disabled="!valid"
@@ -101,6 +102,10 @@
       error () {
         return this.$store.getters.error;
       },
+
+      loading () {
+        return this.$store.getters.loading;
+      }
     },
 
     methods: {
@@ -115,10 +120,10 @@
         }
       },
 
-      addTransaction () {
+      async addTransaction () {
         if (this.valid) {
           try {
-            this.$emit('addTransaction', {sender: this.sender, recipient: this.recipient, amount: this.amount});
+            await this.$emit('addTransaction', {sender: this.sender, recipient: this.recipient, amount: this.amount});
             this.$refs.form.reset();
             this.$refs.recipient.focus();
           } catch (error) {

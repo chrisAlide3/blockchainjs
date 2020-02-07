@@ -19,6 +19,7 @@
           <p class="red--text">{{ error }}</p>
           <v-card-actions>
             <v-btn
+              :loading="loading.includes('registerNode')"
               color="success"
               @click="registerNodeToNetwork"
             >
@@ -47,16 +48,26 @@ export default {
 
     error () {
       return this.$store.getters.error;
+    },
+
+    loading () {
+      return this.$store.getters.loading;
     }
   },
 
   methods: {
-    registerNodeToNetwork () {
+    async registerNodeToNetwork () {
       const data = {
         registeringNode: this.registeringNode,
         newNodeUrl: this.currentNodeUrl
       };
-      this.$emit('registerNodeToNetwork', data);
+      this.$store.dispatch('setLoading', ['registerNode']);
+      try {
+        await this.$emit('registerNodeToNetwork', data);
+        this.$store.dispatch('setLoading', []);
+      } catch (error) {
+        this.$store.dispatch('setLoading', []);
+      }
     }
   }
 }

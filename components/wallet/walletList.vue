@@ -39,6 +39,7 @@
       <v-flex xs12>  
         <div class="justify-space-around">
           <v-btn
+            :loading="loading.includes('generateWallet')"
             @click="createWallet"
             color="primary"
           >
@@ -105,6 +106,10 @@ export default {
     activeWalletBalance () {
       return this.$store.getters.balance;
     },
+
+    loading () {
+      return this.$store.getters.loading;
+    }
   },
 
   methods: {
