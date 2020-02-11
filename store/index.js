@@ -24,6 +24,10 @@ export const mutations = {
     state.currentNodeUrl = blockchain.currentNodeUrl;
   },
 
+  setChain (state, chain) {
+    state.chain = chain;
+  },
+
   setChainValidity (state, isValid) {
     state.isChainValid = isValid;    
   },
@@ -89,20 +93,34 @@ export const actions = {
 
   async nuxtServerInit ({ commit, dispatch }, {req}) {
     try {
+      console.log("nuxtserverinit START dispatch loadBlockchain");
       await dispatch('loadBlockchain');
+      console.log("nuxtserverinit DONE dispatch loadBlockchain");
     } catch (error) {
       console.log('Error dispatch loadBlockchain: ' + error);
     }
 
     try {
       await dispatch('checkChainValidity');
+      
     } catch (error) {
       console.log("Error dispatch checkChainValidity");
+    }
+
+    try {
+      if (this.getters.networkNodes.length > 0) {
+        const res = await dispatch('consensus');
+        console.log("response from nuxtserverinit consensus: ", res);
+      }
+      
+    } catch (error) {
+      console.log("Error in nuxtserverinit consensus action");
     }
 
     if (this.getters.walletAddress !== '') {
       try {
         await dispatch('getBalancebyAddress', this.getters.walletAddress);
+
       } catch (error) {
         console.log('Error dispatch getBalancebyAddress: ' + error);
       }
@@ -112,6 +130,20 @@ export const actions = {
   async loadBlockchain ({ commit }) {
     const blockchain = await this.$axios.$get('/api/blockchain');
     commit('LOAD_BLOCKCHAIN', blockchain);
+  },
+
+  async consensus ({ commit }) {
+    try {
+      const res = await this.$axios.$get(this.getters.currentNodeUrl + '/consensus');
+      console.log('response from /consensus ', res);
+      if (res.chain !== null) {
+        commit("setChain", res.chain);
+      }
+
+    } catch (error) {
+      console.log("Error in consensus action");
+      return error;
+    }
   },
 
   async addTransaction ({ commit, dispatch }, transaction) {
@@ -158,17 +190,6 @@ export const actions = {
       console.log("Error getting balance: " + error);
     }  
   },
-
-  // async getBalanceOfActiveWallet ({ commit }, walletAddress) {
-  //   try {
-  //     // const address = this.getters.walletAddress;
-  //     const res = await this.$axios.$get(this.getters.currentNodeUrl + '/address/' + walletAddress);
-  //     commit('writeBalance', res.balance);  
-  //   } catch (error) {
-  //     console.log("Error getting balance: " + error);
-  //   }
-    
-  // },
 
   async mineBlock ({ commit, dispatch }) {
     try {
@@ -259,7 +280,9 @@ export const actions = {
       const res = await this.$axios.$post(payload.registeringNode + '/api/register-and-broadcast-node', payload);
       commit('setError', '');
       dispatch('getNetworkNodes');
-      console.log('Response from register-node action: ' + JSON.stringify(res));
+      console.log('Response from register-node action: ', res);
+      dispatch('consensus');
+
     } catch (error) {
       console.log('Error in registerNode action: ' + JSON.stringify(error.message));
       commit('setError', 'Network Node is not responding. Try register with another node!');

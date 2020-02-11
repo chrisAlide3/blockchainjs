@@ -218,7 +218,7 @@ router.post("/register-and-broadcast-node", function(req, res) {
   
   const newNodeUrl = req.body.newNodeUrl;
 
-  if (bitcoin.networkNodes.indexOf(newNodeUrl) == -1) {
+  if (bitcoin.networkNodes.indexOf(newNodeUrl) === -1) {
     bitcoin.networkNodes.push(newNodeUrl);
     bitcoin.writeBlockchainFile(bitcoin.chain, bitcoin.pendingTransactions, bitcoin.networkNodes);
   }
@@ -254,7 +254,10 @@ router.post("/register-and-broadcast-node", function(req, res) {
           })
           .catch(err => {
             console.log(err);
-            res.send('Error registering nodes-bulk');
+            res.json({
+              note: 'New node registered with some nodes in network',
+              node: newNodeUrl
+            });
           })
         .catch(err => {
           console.log(err);
@@ -368,14 +371,20 @@ router.get('/consensus', function(req, res) {
             note: 'Current chain has been replaced',
             chain: bitcoin.chain
           });
+          return;
         }else {
           res.json({
             note: 'Current chain has not been replaced',
-            chain: bitcoin.chain
+            chain: null
           });
+          return;
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err)
+        res.status(503).send('Could not get chain from all nodes');
+        return;
+      });
   })
 })
 
