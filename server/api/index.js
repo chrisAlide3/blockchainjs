@@ -214,59 +214,56 @@ router.get('/mine', function (req, res) {
 })
 
 router.post("/register-and-broadcast-node", function(req, res) {
-  console.log("req.body register: " + JSON.stringify(req.body));
-  
+  console.log("req.body register: ", req.body);
   const newNodeUrl = req.body.newNodeUrl;
-
+  // Add newnode to networkNodes if not already there
   if (bitcoin.networkNodes.indexOf(newNodeUrl) === -1) {
     bitcoin.networkNodes.push(newNodeUrl);
     bitcoin.writeBlockchainFile(bitcoin.chain, bitcoin.pendingTransactions, bitcoin.networkNodes);
   }
 
-  // Broadcast new node to network nodes if available
-  if (bitcoin.networkNodes.length > 0) {
-    const reqNodesPromises = [];
-    bitcoin.networkNodes.forEach(networkNodeUrl => {
-      const requestOptions = {
-        uri: networkNodeUrl + '/register-node',
-        method: 'POST',
-        body: { newNodeUrl: newNodeUrl },
-        json: true
-      };
-      reqNodesPromises.push(rp(requestOptions));
-    })
-  
-      Promise.all(reqNodesPromises)
-        .then(data => {
-          const bulkRegisterOptions = {
-            uri: newNodeUrl + '/register-nodes-bulk',
-            method: 'POST',
-            body: { allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl] },
-            json: true
-          }
-          return rp(bulkRegisterOptions);
-        })
-          .then(data => {
-            res.json({
-              note: 'New node registered with network',
-              node: newNodeUrl
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            res.json({
-              note: 'New node registered with some nodes in network',
-              node: newNodeUrl
-            });
-          })
-        .catch(err => {
-          console.log(err);
-          res.send('Error register-node');
-        })
-  }else {
-    res.send('New node registered');
+  // Broadcast new node to network nodes
+  let requestOptions = {};
+  bitcoin.networkNodes.forEach(networkNodeUrl => {
+    requestOptions = {
+      uri: networkNodeUrl + '/register-node',
+      method: 'POST',
+      body: { newNodeUrl: newNodeUrl },
+      json: true
+    };
+    rp(requestOptions)
+      .then(data => {
+        console.log("/register-node succesfull");        
+      })
+      .catch(err => {
+        console.log("/rgister-node with some errors");
+      })
+  })
+
+  // Bulk regitration to new networkNode
+  const bulkRegisterOptions = {
+    uri: newNodeUrl + '/register-nodes-bulk',
+    method: 'POST',
+    body: { allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl] },
+    json: true
   }
-  
+  rp(bulkRegisterOptions)
+    .then(data => {
+      console.log('/register-node-bulk succesfull');
+      res.json({
+        note: '/register-node-bulk succesfull',
+        node: newNodeUrl
+      });
+      return;
+    })
+    .catch(err => {
+      console.log('/register-node-bulk error');
+      res.json({
+        note: 'Could not register nodes bulk',
+        node: newNodeUrl
+      });
+      return;
+    })
 })
 
 router.post('/register-node', function(req, res) {
