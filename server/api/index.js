@@ -2,6 +2,7 @@ const express = require('express');
 //const bodyParser = require('body-parser');
 const fs = require('fs');
 const rp = require('request-promise');
+const axios = require('axios');
 const Blockchain = require("./blockchain");
 const EC = require('elliptic').ec;
 
@@ -336,53 +337,48 @@ router.post('/receive-new-block', function(req, res) {
 })
 
 router.get('/consensus', function(req, res) {
-  // Getting the blockchain of each node in the network
-  const reqNodesPromises = [];
-  bitcoin.networkNodes.forEach(networkNodeUrl => {
-    const requestOptions = {
-      uri: networkNodeUrl + '/blockchain',
-      method: 'GET',
-      json: true
-    };
-    reqNodesPromises.push(rp(requestOptions));
-     Promise.all(reqNodesPromises)
-      .then(blockchains => {
-        const currentChainLength = bitcoin.chain.length;
-        let currentChainReplaced = false;
+  let url = '';
+  let chainUpdated = false;
 
-        blockchains.forEach(blockchain => {
-          let nodeChainLength = blockchain.chain.length;
-          // Replacing current chain with longer chain from node
-          if (nodeChainLength > currentChainLength) {
-            // Replace only if chain is valid
-            if (bitcoin.chainIsValid(blockchain.chain)) {
-              bitcoin.chain = blockchain.chain;
-              bitcoin.pendingTransactions = blockchain.pendingTransactions;
-              currentChainReplaced = true;
-            }            
+  for (let i = 0; bitcoin.networkNodes.length > i; i++) {
+    url = bitcoin.networkNodes[i]
+    axios.get(url + '/blockchain')
+      .then(res => {
+        // Replace blockchain if fetched chain longer and valid
+        if (res.data.chain.length > bitcoin.chain.length) {
+          if (bitcoin.chainIsValid(res.data.chain)) {
+            bitcoin.chain = res.data.chain;
+            bitcoin.pendingTransactions = res.data.pendingTransactions;
+            chainUpdated = true;
           }
-        })
-
-        if (currentChainReplaced) {
-          res.json({
-            note: 'Current chain has been replaced',
-            chain: bitcoin.chain
-          });
-          return;
-        }else {
-          res.json({
-            note: 'Current chain has not been replaced',
-            chain: null
-          });
-          return;
         }
+
       })
       .catch(err => {
-        console.log(err)
-        res.status(503).send('Could not get chain from all nodes');
-        return;
-      });
-  })
+        console.log("Enter catch block in /blockchain: ", err.config.url);
+      })
+      .finally(() => {
+        // Send response on last networkNode        
+        if (i === bitcoin.networkNodes.length - 1) {
+          if (chainUpdated) {
+            bitcoin.writeBlockchainFile(bitcoin.chain, bitcoin.pendingTransactions, bitcoin.networkNodes);
+            res.json({
+              message: 'Blockchain has been replaced',
+              newChain: bitcoin.chain,
+              newPendingTransactions: bitcoin.pendingTransactions
+            });
+            return
+          }else {
+            res.json({
+              message: 'Blockchain has not been replaced',
+              newChain: null,
+              newPendingTransactions: null
+            });
+            return
+          }          
+        }
+      })
+  }
 })
 
 router.get('/chain-valid', function(req, res) {

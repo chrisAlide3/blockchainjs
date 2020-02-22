@@ -109,8 +109,8 @@ export const actions = {
 
     try {
       if (this.getters.networkNodes.length > 0) {
-        const res = await dispatch('consensus');
-        console.log("response from nuxtserverinit consensus: ", res);
+        await dispatch('consensus');
+        console.log("Consensus dispatched succesfully");
       }
       
     } catch (error) {
@@ -135,9 +135,10 @@ export const actions = {
   async consensus ({ commit }) {
     try {
       const res = await this.$axios.$get(this.getters.currentNodeUrl + '/consensus');
-      console.log('response from /consensus ', res);
-      if (res.chain !== null) {
-        commit("setChain", res.chain);
+      console.log('Consensus action succesfull');
+      if (res.newChain !== null) {
+        commit("setChain", res.newChain);
+        commit("overwritePendingTransactions", res.newPendingTransactions);
       }
 
     } catch (error) {
@@ -281,7 +282,14 @@ export const actions = {
       commit('setError', '');
       dispatch('getNetworkNodes');
       console.log('Response from register-node action: ', res);
-      dispatch('consensus');
+      try {
+        await dispatch('consensus');
+        console.log('consensus action returned after register');
+        
+      } catch (error) {
+        console.log("Error in dispatch consensus on registerNodeToNetwork");
+        
+      }
 
     } catch (error) {
       console.log('Error in registerNode action: ' + JSON.stringify(error.message));
