@@ -10,10 +10,24 @@
               <v-divider class="mb-2"></v-divider>
 
               <div class="caption mb-1">Hash</div>
-              <p :class="block.index %2 === 0 ?'pink--text' : 'blue--text'">{{block.hash}}</p>
+              <v-textarea
+                :background-color="block.index %2 === 0 ?'pink' : 'blue'"
+                disabled
+                rows=2
+                auto-grow           
+                :value="block.hash"
+              ></v-textarea>
+              <!-- <p :class="block.index %2 === 0 ?'pink--text' : 'blue--text'">{{block.hash}}</p> -->
 
               <div class="caption mb-1">Previous Hash</div>
-              <p :class="block.index %2 === 0 ?'blue--text' : 'pink--text'">{{block.previousHash}}</p>
+              <v-textarea
+                :background-color="block.index %2 === 0 ?'blue' : 'pink'"
+                disabled
+                rows=2
+                auto-grow
+                :value="block.previousHash"
+              ></v-textarea>
+              <!-- <p :class="block.index %2 === 0 ?'blue--text' : 'pink--text'">{{block.previousHash}}</p> -->
               <v-divider class="mb-2"></v-divider>
 
 

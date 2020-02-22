@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div class="title text-xs-center">Pending Transactions</div>
+    <v-btn @click="$router.push('/transactions/add-transaction')" outline class="mb-4" color="success">Add Transaction</v-btn>
     <TransactionsTable />
     <v-btn @click="$router.push('/transactions/add-transaction')" outline class="mt-4" color="success">Add Transaction</v-btn>
   </div>
