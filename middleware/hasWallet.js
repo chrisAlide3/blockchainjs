@@ -1,5 +1,4 @@
 export default function ({ store, redirect, app}) {
-
   if (store.getters.walletAddress === '') {
     if (process.client) {
       let myToast = app.$toast.error("You have been redirected as you need a wallet to access this page!");
@@ -10,6 +9,5 @@ export default function ({ store, redirect, app}) {
     if (process.server) {
       redirect('/register');
     }
-       
   }
 }
