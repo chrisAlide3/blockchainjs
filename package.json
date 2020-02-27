@@ -17,6 +17,7 @@
   "dependencies": {
     "@mdi/font": "^4.8.95",
     "@nuxtjs/axios": "^5.9.2",
+    "@nuxtjs/toast": "^3.3.0",
     "@nuxtjs/vuetify": "0.5.5",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",

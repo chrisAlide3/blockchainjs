@@ -47,7 +47,8 @@ module.exports = {
   modules: [
     '@nuxtjs/vuetify',
     '@nuxtjs/axios',
-    'nuxt-clipboard2'
+    'nuxt-clipboard2',
+    '@nuxtjs/toast'
   ],
   /*
   ** vuetify module configuration
@@ -63,6 +64,21 @@ module.exports = {
       error: colors.deepOrange.accent4,
       success: colors.green.accent3
     }
+  },
+
+  toast: {
+    position: 'bottom-center',
+    // duration: 4000,
+
+    // register: [ // Register custom toasts
+    //   {
+    //     name: 'nowallet',
+    //     message: 'You have been redirected as you need a wallet to access this page!',
+    //     options: {
+    //       type: 'error'
+    //     }
+    //   }
+    // ]
   },
   /*
   ** Build configuration
