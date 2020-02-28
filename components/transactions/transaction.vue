@@ -49,8 +49,8 @@
         </v-card-title>
 
         <v-card-actions>
-          <v-btn flat color="orange" @click="copySender" >Copy sender to clipboard</v-btn>
-          <v-btn flat color="orange" @click="copyRecipient">Copy recipient to clipboard</v-btn>
+          <v-btn flat color="pink" @click="copySender" >Copy sender to clipboard</v-btn>
+          <v-btn flat color="pink" @click="copyRecipient">Copy recipient to clipboard</v-btn>
         </v-card-actions>
       </v-card>
       <br>

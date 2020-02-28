@@ -21,7 +21,7 @@
       <v-flex
         v-for="block in chain"
         :key="block.id"
-        xs4
+        xs12 sm6 md4
       >
         <Block :block="block" :show-transactions="false" />
       </v-flex>

@@ -12,20 +12,20 @@
               <div class="caption mb-1">Hash</div>
               <v-textarea
                 :background-color="block.index %2 === 0 ?'pink' : 'blue'"
-                disabled
-                rows=2
+                readonly
+                rows=3
                 auto-grow           
-                :value="block.hash"
+                :value="block.hash === '0' ?'Genesis Block \n \n' + block.hash :block.hash"
               ></v-textarea>
               <!-- <p :class="block.index %2 === 0 ?'pink--text' : 'blue--text'">{{block.hash}}</p> -->
 
               <div class="caption mb-1">Previous Hash</div>
               <v-textarea
                 :background-color="block.index %2 === 0 ?'blue' : 'pink'"
-                disabled
-                rows=2
+                readonly
+                rows=3
                 auto-grow
-                :value="block.previousHash"
+                :value="block.previousHash === '0' ?'Genesis Block \n \n' + block.previousHash : block.previousHash"
               ></v-textarea>
               <!-- <p :class="block.index %2 === 0 ?'blue--text' : 'pink--text'">{{block.previousHash}}</p> -->
               <v-divider class="mb-2"></v-divider>
