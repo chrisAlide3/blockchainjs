@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap>
-      <v-flex xs12 text-truncate pr-auto>
+      <v-flex xs12 pr-auto>
         <v-card :style="invalidBlockIndex === block.index ?{border: 'solid red 2px'} : {}">
           <v-card-title primary-title>
             <h3 class="headline mb-0 orange--text">ID: {{ block.index }}</h3>
@@ -10,24 +10,15 @@
               <v-divider class="mb-2"></v-divider>
 
               <div class="caption mb-1">Hash</div>
-              <v-textarea
-                :background-color="block.index %2 === 0 ?'pink' : 'blue'"
-                readonly
-                rows=3
-                auto-grow           
-                :value="block.hash === '0' ?'Genesis Block \n \n' + block.hash :block.hash"
-              ></v-textarea>
-              <!-- <p :class="block.index %2 === 0 ?'pink--text' : 'blue--text'">{{block.hash}}</p> -->
+              <div class="text-truncate mb-2" :class="block.index %2 === 0 ?'pink--text' : 'blue--text'">
+                {{block.hash === '0' ?'Genesis block' :block.hash}}
+              </div>
+              <v-divider class="mb-2"></v-divider>
 
               <div class="caption mb-1">Previous Hash</div>
-              <v-textarea
-                :background-color="block.index %2 === 0 ?'blue' : 'pink'"
-                readonly
-                rows=3
-                auto-grow
-                :value="block.previousHash === '0' ?'Genesis Block \n \n' + block.previousHash : block.previousHash"
-              ></v-textarea>
-              <!-- <p :class="block.index %2 === 0 ?'blue--text' : 'pink--text'">{{block.previousHash}}</p> -->
+              <div class="text-truncate mb-2" :class="block.index %2 === 0 ?'blue--text' : 'pink--text'">
+                {{block.previousHash === '0' ?'Genesis' :block.previousHash}}
+              </div>
               <v-divider class="mb-2"></v-divider>
 
 
