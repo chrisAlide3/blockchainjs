@@ -4,7 +4,9 @@
       <h3 class="orange--text mb-3">Invalid Block</h3>
       <Block :block="invalidBlock" />
       <div>
-        <v-btn @click="checkIfChainCanBeDownloaded()" light color="orange">Download Valid Chain from Network</v-btn>
+        <v-btn
+          :loading="loading.includes('getChain')" 
+          @click="checkIfChainCanBeDownloaded()" light color="orange">Download Valid Chain from Network</v-btn>
       </div>
     </v-layout>
 
@@ -88,6 +90,11 @@ export default {
         return false;
       }
     },
+
+    loading () {
+      return this.$store.getters.loading;
+    }
+
   },
 
   methods: {
@@ -95,6 +102,7 @@ export default {
       if (!this.nodeRegistered) {
         this.showRegisterToNetworkDialog = true;
       }else {
+        console.log("getChain called")
         this.getChain();  
       }
     },     
@@ -113,11 +121,16 @@ export default {
     },
 
     async getChain () {
+      this.$store.dispatch('setLoading', ['getChain']);
       try {
-        console.log("get chain");
+        this.$store.dispatch('consensus');
+        console.log("get chain dispatched successfully");
+        this.$store.dispatch('setLoading', []);
+        this.$route.push('/chain');
         
       } catch (error) {
-        console.log("Error getting chain");
+        console.log("Error in dispatch getChain");
+        this.$store.dispatch('setLoading', []);
       }
     }
   },
