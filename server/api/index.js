@@ -339,17 +339,21 @@ router.post('/receive-new-block', function(req, res) {
 router.get('/consensus', function(req, res) {
   let url = '';
   let chainUpdated = false;
+  let currentChainValid = bitcoin.chainIsValid(bitcoin.chain).isChainValid;
 
   for (let i = 0; bitcoin.networkNodes.length > i; i++) {
     url = bitcoin.networkNodes[i]
     axios.get(url + '/blockchain')
       .then(res => {
         // Replace blockchain if fetched chain longer and valid
-        if (res.data.chain.length > bitcoin.chain.length) {
-          if (bitcoin.chainIsValid(res.data.chain)) {
+        if (res.data.chain.length > bitcoin.chain.length || !currentChainValid) {
+          if (bitcoin.chainIsValid(res.data.chain).isChainValid) {
+            console.log("/consensus chain valid: ", url);
+            
             bitcoin.chain = res.data.chain;
             bitcoin.pendingTransactions = res.data.pendingTransactions;
             chainUpdated = true;
+            currentChainValid = true;
           }
         }
 
